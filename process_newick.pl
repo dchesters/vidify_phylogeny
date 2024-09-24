@@ -19,7 +19,7 @@ my $arg_string  = join ' ', @ARGV;
 # plot_circular_tree_with_branchlengths
 # plot_cartoonized_clades 
 # 
-# 
+# -list_boot_support: for all terminals, lists in a file the boot support of placement.
 # 
 # 
 # 
@@ -49,46 +49,70 @@ my $arg_string  = join ' ', @ARGV;
 # 
 # 
 # 	change log
-# 	2017 JAN 22, v1.01: Got it working on a large complex-labelled tree.
-# 	2017 JAN 25, v1.02: Streamline retrieval of terminals (ignore those without tax info),
-# 		and their sampling for inference of shared taxa.
-# 	2017 FEB 02, v2.01: included tree plotter
-# 	2017 FEB 18, v2.02: Option to label user specified subset of tips with a string 
-#		(output is .process_newick4)
-# 	2017 MAR 07, v2.03: Hack working for applying higher taxa where only genus names given in labels
-# 	2017 MAR 09, v2.04: Bugfix tree drawing, some tip branches were overlapping
-# 		plot rectangular in addiition to circluar tree
-# 	2017 MAR 20, v2.05: Ignore lineage inforamtino only given till ordinal rank (BOLDs), 
-#		when inferring taxonomies
-# 		option to fix newick strings, fully bifurcate, remove non-splitting internal nodes
-# 	2017 AUG 12, v2.06: Option to reduce length of very long branches.
-# 	2017 AUG 13, v2.07: Polytomies are now correctly plotted.
-# 	2017 AUG 15, v2.08: Minor, terminating semicolon was missing from rerooted newick outfile
-# 	2017 SEP 02, v2.09: Prints log with features of the tree
-# 		new option available, -replace_scientific_notation_in_branchlengths
-# 	2017 OCT 03, v2.10: Prints simple list of terminals in input tree (with taxonomic lineage info),
-# 		sounds like silly little thing, but for huge trees can be useful,
-# 	2018 FEB 11, v2.11: Multiply_all_branchlengths given in command, i got bored hashing out and not so
-# 	2018 MAR 07, v2.12: New function to combine node labels from 2 different trees.
-# 		works even if rerooting ...
-# 		and should work in partially overlapping trees, it matches nodes via lists of terminals
-#		new node labels have support value from tree given in -intree ,
-#		followed by underscore, followed by support given in tree in -combine_node_labels
-#	2018 MAR 19, v2.13: Plots support from second user tree, including bootstrap_IC
-# 	2018 APR 07, v2.14: Couple of things transfered to command line, since, irritating if forget to change them
-# 	2018 APR 09, v2.15: Prints tip labels, majority taxon for 3 ranks. also prints colorful tips.
-# 			command option to draw circles at tips, if tip has string match: -highlight_tip_string_match
-# 	2018 DEC 20, v2.16: Option to do some minor processing of tips
-# 	2019 SEP 21, v2.17: Corrects minor root format error (made by bioperl reroot function i think)
-# 	2019 SEP 22, v2.18: Function for coloring lineages from user specified terminals
-# 	2019 OCT 23, v2.19: NA
-# 	2019 DEC 04, v2.20: Prints trees with family or subfam as node labels
-# 	2020 MAY 09, v2.21: Bugfix tip coloring with circles.
-# 	2020 JUL 23, v2.22: Produces output file for depicting phylogeny as audio (sonification)
-# 	2021 JAN 18, v2.23: On tree figure, plot pie charts for trait probabilities
-# 	2021 MAY 29, v2.24: Table output for making video frame, corresponding to audification
-# 	2021 JUN 06, v2.25: Some annotations made while transfering code to a seperate script (plotting function to relational_constraints).
-# 	2021 AUG 11, v2.26: prints counts of dervied terminals for each node to vidify table, useful parameter in prettyfying
+# 	2017 JAN 22, v1.01: 	Got it working on a large complex-labelled tree.
+# 	2017 JAN 25, v1.02: 	Streamline retrieval of terminals (ignore those without tax info),
+# 				and their sampling for inference of shared taxa.
+# 	2017 FEB 02, v2.01: 	Included tree plotter
+# 	2017 FEB 18, v2.02: 	Option to label user specified subset of tips with a string 
+#				(output is .process_newick4)
+# 	2017 MAR 07, v2.03: 	Hack working for applying higher taxa where only genus names given in labels
+# 	2017 MAR 09, v2.04: 	Bugfix tree drawing, some tip branches were overlapping
+# 				plot rectangular in addiition to circluar tree
+# 	2017 MAR 20, v2.05: 	Ignore lineage inforamtino only given till ordinal rank (BOLDs), 
+#				when inferring taxonomies
+# 				option to fix newick strings, fully bifurcate, remove non-splitting internal nodes
+# 	2017 AUG 12, v2.06: 	Option to reduce length of very long branches.
+# 	2017 AUG 13, v2.07: 	Polytomies are now correctly plotted.
+# 	2017 AUG 15, v2.08: 	Minor, terminating semicolon was missing from rerooted newick outfile
+# 	2017 SEP 02, v2.09: 	Prints log with features of the tree
+# 				new option available, -replace_scientific_notation_in_branchlengths
+# 	2017 OCT 03, v2.10: 	Prints simple list of terminals in input tree (with taxonomic lineage info),
+# 				sounds like silly little thing, but for huge trees can be useful,
+# 	2018 FEB 11, v2.11: 	Multiply_all_branchlengths given in command, i got bored hashing out and not so
+# 	2018 MAR 07, v2.12: 	New function to combine node labels from 2 different trees.
+# 				works even if rerooting ...
+# 				and should work in partially overlapping trees, it matches nodes via lists of terminals
+#				new node labels have support value from tree given in -intree ,
+#				followed by underscore, followed by support given in tree in -combine_node_labels
+#	2018 MAR 19, v2.13: 	Plots support from second user tree, including bootstrap_IC
+# 	2018 APR 07, v2.14: 	Couple of things transfered to command line, since, irritating if forget to change them
+# 	2018 APR 09, v2.15: 	Prints tip labels, majority taxon for 3 ranks. also prints colorful tips.
+# 				command option to draw circles at tips, if tip has string match: -highlight_tip_string_match
+# 	2018 DEC 20, v2.16: 	Option to do some minor processing of tips
+# 	2019 SEP 21, v2.17: 	Corrects minor root format error (made by bioperl reroot function i think)
+# 	2019 SEP 22, v2.18: 	Function for coloring lineages from user specified terminals
+# 	2019 OCT 23, v2.19: 	NA
+# 	2019 DEC 04, v2.20: 	Prints trees with family or subfam as node labels
+# 	2020 MAY 09, v2.21: 	Bugfix tip coloring with circles.
+# 	2020 JUL 23, v2.22: 	Produces output file for depicting phylogeny as audio (sonification)
+# 	2021 JAN 18, v2.23: 	On tree figure, plot pie charts for trait probabilities
+# 	2021 MAY 29, v2.24: 	Table output for making video frame, corresponding to audification
+# 	2021 JUN 06, v2.25: 	Some annotations made while transfering code to a seperate script (plotting function to relational_constraints).
+# 	2021 AUG 11, v2.26: 	Prints counts of dervied terminals for each node to vidify table, useful parameter in prettyfying
+# 	2022 APR 11, v2.27: 	Minor changes to plotting.
+# 	2022 APR 27, v2.28: 	New option to plot internal scales on the circular phylogeny.
+# 	2022 JUN 16, v2.29: 	option to list placement boot support of all terminals.
+# 	2022 AUG 23, v2.30: 	New function for plotting grafted subtrees of synthesis phylogeny.
+# 	2022 AUG 25, v2.31: 	Refined graft plotting. New option to plot bars near terminals with length relative to counts.
+# 	2022 SEP 03, v2.32: 	Minor fix to processing node labels for denoting grafts.
+# 	2023 FEB 22, v2.33: 	Option -bayestraits_AddTag, gives herein node definitions in format of bayestraits AddTag command,
+# 				thus will be easier to match bayestraits output to nodes in this script later.
+# 	2023 FEB 23, v2.34:	Option to print pie charts for state probabilities for internal nodes, 
+#				command line option is -piechart_probs_internalnodes [file_known_states] [file_predicted_states]
+# 	2023 JUN 24, v2.35:	Minor changes to plotting grafted phylogeny.
+# 	2023 JUL 07, v2.36:	Plotting variables now given in control file, 
+#				makes it easier to switch between projects, no reinputting values.
+# 	2023 AUG 28, v2.37:	Reading controlfile more complete.
+# 	2023 AUG 29, v2.38:	Option to attach higher tax labels to terminal string.
+# 	2023 SEP 04, v2.39:	Fixed laderization for plotting polytomies.
+# 	2023 SEP 05, v2.40:	Option to plot phylogenetic coverage of species from set of sourcetrees onto taxonomic tree. 
+# 	2023 NOV 25, v2.41:	Refining plotting phylogenetic coverage.
+# 	2024 MAR 31, v2.42:	Option to collapse nodes adjacent to terminals ($collapse_terminus_adjacent), 
+#				will almost half file size for large taxon plots.
+# 	2024 APR 02, v2.43:	Fix to plotting short branches, enabling higher values for variable notch_size and thus smaller file sizes.
+# 	2024 JUN 21, v2.44:	Added function to read user tree, infer taxonomic names for internal nodes, write them as node IDs.
+# 
+# 
 # 
 # 
 # 
@@ -114,12 +138,11 @@ $randomly_resolve_polytomies = 0; # not yet working
 # @ranksarray 	= (" family");#, " family"
 # why no family, subfamily tribe for flies?
 # @ranksarray 	= ( " superfamily" , " family", " subfamily", " tribe");#, " family"
-# @ranksarray 	= (" order" , " family");#, " family"
- @ranksarray 	= (" family"," subfamily", " tribe");#, " family"
+ @ranksarray 	= (" order" , " family");#, " family"
+ @ranksarray 	= (" subfamily", " tribe");#, " family"
 
 
 my $remove_branchlengths_from_input_tree = 0; 
-
 my $remove_node_support_from_input_tree = 1;
 
 my $process_terminals = 0; # remove quotes 'Acropteris_sp.'
@@ -140,28 +163,52 @@ $verbose_log = 0;  # 1 == a few more details, but runs slower on big tree
 
 # for plotting trees:
 $branch_plot_type 		= 2; # default = 2; 1= shortcut single line branching
-$multipleier 			= 6; # Circumferal range
+$multipleier 			= 0.6; # Circumferal range ('Y' axis); default = 6
+$starting_node_plot_y 		= 1; # default = 1; [probably wont affect much]
+$clock_adjust 			= 0.60; # subtract this from adjusted y position; increase value to 'rotate' circular phylogeny
+					# 1.4
+
+# $multipleier = 6; $clock_adjust = 0 gives 10-8 o'clock
+# $multipleier = 4; $clock_adjust = 3.6 gives 10:30 to 6:00
+# $multipleier= 1.2; $clock_adjust= 1.20; gives 2-4 pm
+# $multipleier= 0.6; $clock_adjust= 0.60; gives 2:30-3:30
 
 
-# $image_settings 		= "png\(\"outfile_name.png\"\, 2000\, 2000\)\n";
- $image_settings 		= "png\(\"outfile_name.png\"\, 9000\, 9000\)\n"; # upper limit is 10,000*10,000
+
+$plot_X_left  = 0.76;  $plot_X_right = 0.85; 
+$plot_Y_lower = -0.23; $plot_Y_upper = 0.23; 
+
+
+
+
+
+
+
+
+
 
 
 	
 						# aug 2017: 0.02
-$reduce_very_long_branches_to_this = 1000; # to inactivate , put large number (1000).
+$reduce_very_long_branches_to_this = 10000; # to inactivate , put large number (10000).
+
+
+
 
 # **** $multiply_all_branchlengths = 200; # hash out to inactivate *** now given in command
 
 # settings for circular plotted tree:
 
-$default_node_color = "black"; # grey black gray33
+$default_node_color = "black"; # grey black gray33 darkgrey
 $clade_size_limit_for_interal_label = 10;
 
-					# if zooming into huge tree, need low number here
-$notch_size 			= 0.001; # size of segments for circumferal branches. 
+$notch_size 			= 0.00002; 	# Size of segments for circumferal branches. 
+						# makes big difference to file size.
+						# If zooming into huge tree, need small number here
+						# also smaller for full circle trees, subtle semicircle trees can have larger value
+						# default 0.001
 						# 0.001 was too big in zoomed in 90000 sp tree (some noticable as not plotted) 
-						# for huge ITOL2 tree, chhose 0.00002
+						# for huge ITOL2 tree, choose 0.00002
 
 $big_clade_color 		= "pink";
 $truncate_new_taxonomic_strings		= 0;
@@ -173,6 +220,9 @@ $branch_root_to_tip_thickness_scale_factor = 1.01; # the degree to which thickne
 						# large number == very thin branches
 
 
+$collapse_terminus_adjacent = 0; # default=0;
+				# 202403: for large taxonomic plots, will roughly half file size by collapsing nodes adjacent to terminals.
+
 
 
 
@@ -181,29 +231,77 @@ $branch_root_to_tip_thickness_scale_factor = 1.01; # the degree to which thickne
 
 # main parameters to change for plotting sub-trees for ITOL2
 
-$print_tips_circular_tree = 0;
+$print_tips_circular_tree = 1;
+$attach_higher_taxname_to_tip_label = 0;
+
+$tip_tax_label_cex = 0.50;		# terminal labels
 $all_tip_labels_eqidistant = 0;
-$plot_tip_label_offset	= 0.10; # dont start tip label but against node, little space
+$plot_tip_label_offset	= 0.0006; # dont start label right against tip/terminal, little space
 
-$ref_tree_internal_label_cexB 	= 8;
-$width 				= 25.0;	# BRANCH WIDTH; default = 1
-	# if no branch lengths, probably both -1,1 
-$xlim_circ	= "c(-2,2)"; $ylim_circ	= "c(-2,2)"; # 
+$ref_tree_internal_label_cexB 	= 0.1;
+$width 				= 4.0;	# BRANCH WIDTH/thickness (lwd); default = 1
 
-# xlim = c(0.2,1), ylim = c(1,1.8)
 
-$reference_tip_label_x = 1.9; # majority tax label given to tip, how far out to plot the label
-	$append_terminal_label_with_fam_name = 1;
-$tip_tax_label_cex = 9.0;
+
+$reference_tip_label_x = 1.01; # majority tax label given to tip, how far out to plot the label
+				# if not time constrained, probably 1.9
+				# ITOL3 time constrained=550
+	$append_terminal_label_with_fam_name = 0;
+	$truncate_summary_tax_label =1;
+	$summary_tax_label_cex = 1.00;
+	$summary_tax_label_adj =0.5;	# ,adj=0 means left justify
 
 $plot_rainbow = 0;
-
-
-
-	$rainbow_line_width = 12; # 2
+	$rainbow_line_width = 4; # 2
  	$num_labs_to_print_rainbow = 230;
-$plot_root_node_branchlength = 0.00025; # the very first branch, would be far left of a rectangualr 
+	# also define below: $rainbow_X1, $rainbow_X2
+
+
+$internal_support_point_size = 12;
+
+
+$scale_branchlengths 	= 2; 		# 0= dont scale, 1=scale all, 2=scale all except root
+$scale_bl_value		= 0.2; 		# if($scale_branchlengths == 1) {$branchlength_to_child = $branchlength_to_child * $scale_bl_value};
+$default_terminal_branchlength = 0.002; # only if $plot_trees_with_branchlengths == 0
+
+
+$plot_root_node_branchlength = 0.80; 	# the very first branch, would be far left of a rectangualr 
 					# < AUG2017 = 0.2; 0.75
+					# default for tree with branchlengths = 0.00025
+					# for tree without, >0.5
+					#
+
+$plot_internal_scales = 0; # internal scales like colored part-circles under the branches, a series of them to show eg time points.
+	$steps_internal_scales = 200;
+	@internal_scales_inner = (311,511,711);
+	@internal_scales_outer = (511,711,911);
+	@internal_scales_color = (0.5,0.3,0.1);
+
+
+$print_internal_node_labels_on_tree = 0; # applies to rectangular or Circular. 1 == inferred labels, 2== native labels, 3==more specific.
+$rectangular_tree_internal_label_cex = 0.5; # this also used as cex for internal labels of Circular tree
+
+$internal_label_justify = 0; # adj=0 means left justify, 0.5 would be middle
+
+
+  #  new for 2022-AUG: denoting grafts
+my $graft_iterations = 6; # default =1; if plotting several graft iterations then increase this number
+
+$graft_label_width 	= 0.07; 	# Branch Length, including large graft label
+$graft_branchlength1	= 0.0025; 	# grafts still to come
+$graft_branchlength2	= 0.00030; 	# no more grafts
+
+$graft_point_col 	= "red";
+$graft_point_cex 	= 2.0;	# default 2
+$graft_point_border_cex = 2.6;
+$graft_tax_label_cex 	= 4.0; # default 1.62
+$simplify_graft_labels 	= 1; # if ==1, trim off tree filename
+
+$metacoder_node_points = 0; 	# 1 == scale branch thickness and add node pie charts based on number of decendents and coverage 
+				# 2 == similar to 1 except based on rank number of decendents
+				# 3 == scale branch widths, but no points
+				# 4 == scale branch widths, points presence absense not proportions
+				# rank number of decendents will probably look better than absolute
 
 ######################################################################
 
@@ -211,44 +309,69 @@ $plot_root_node_branchlength = 0.00025; # the very first branch, would be far le
 # $internal_names_circular_tree
 
 				# 202108: $pie_radius 		= 0.007;$pie_radius_border 	= 0.009;
-$pie_radius 		= 0.004;
-$pie_radius_border 	= 0.005;# border, different color for prior known states, and predicted states
+$pie_radius 		= 0.00180;
+$pie_radius_border 	= 0.00181;# border, different color for prior known states, and predicted states
+
+$known_states_point_type = 2; 				# 1 = circle, 2 == triangle
+	$triangle_cex1 	= 2.2; $triangle_cex2 = 2.0;	# if plotting known states as triangle
 
 
-		# TT project:
-		#	 $trait_state_colors{"A"} = "red";
-		#	$trait_state_colors{"B"} = "blue";
-		#	$trait_state_colors{"C"} = "green";
-		#	$trait_state_colors{"D"} = "yellow";
-		#	$trait_state_colors{"E"} = "red";
-		#	$trait_state_colors{"U"} = "yellow";
-		#	$trait_state_colors{"S"} = "blue";
 
-		# hive MBC project:
-			$trait_state_colors{"H"} = "green";
-			$trait_state_colors{"T"} = "brown";
-			$trait_state_colors{"S"} = "blue";
-			$trait_state_colors{"V"} = "red";
-			$trait_state_colors{"G"} = "yellow";
+# if($known_state{$test} =~ /\w/)
+
+
+# NOTE: seems states need to be alphabetically ordered, or they may reorder
+
+	# TT1:
+	# $trait_state_colors{"A"} = "red";
+	# $trait_state_colors{"B"} = "blue";
+	# $trait_state_colors{"C"} = "green";
+	# $trait_state_colors{"D"} = "yellow";
+	# $trait_state_colors{"E"} = "red";
+	# $trait_state_colors{"U"} = "yellow";
+	# $trait_state_colors{"S"} = "blue";
+
+	# hive MBC project:
+	#	$trait_state_colors{"H"} = "green";
+	#	$trait_state_colors{"T"} = "brown";
+	#	$trait_state_colors{"S"} = "blue";
+	#	$trait_state_colors{"V"} = "red";
+	#	$trait_state_colors{"G"} = "yellow";
+
+	# Syrphids:
+
+	# $trait_state_colors{"A"} = "green";
+	# $trait_state_colors{"B"} = "brown";
+	# $trait_state_colors{"C"} = "blue";
+	# $trait_state_colors{"D"} = "red";
+
+	# LECTY
+	 $trait_state_colors{"P"} = "green";
+	 $trait_state_colors{"M"} = "red";
+	 $trait_state_colors{"O"} = "blue";
+
+	# NG_REFS Leps voltinism
+#	$trait_state_colors{"U"} = "green";
+#	$trait_state_colors{"M"} = "red";
+#	$trait_state_colors{"B"} = "blue";
 
 
 
 # $highlight_tip_string_match = 0; # find tips with string below, then draw circles at these
 # $tip_string_to_highlight = "CK_OTU";
 
-$highlight_tip_string_cex = 5; # circular point size, 
+$highlight_tip_string_cex = 3; # circular point size, 
 $highlight_tips_from_file = 0;
 
 # not sure what following is for, the bar x is set by: $rainbow_X1 = 1.5;$rainbow_X2
 $highlight_tips_X = 1.9;# 0.992
 
-$highlight_tips_eqidistant = 0;#  0 = highlight tip at tip, 1= hoghligt tip outwards a bit and all at same radius
+$highlight_tips_eqidistant = 0;#  0 = highlight tip at tip, 1= highlight tip outwards a bit and all at same radius
+
+#####################################################################################################
 # $highlight_file = "/home/douglas/scripted_analyses/BEF_China_and_TreeDi/MQ_paper_2/data/OTU_colors"; # OTU_abund_mt30_2
-# $highlight_file = "/home/douglas/scripted_analyses/nCov19/data/haplotype_colors.txt";
+
 # $highlight_file = "/home/douglas/scripted_analyses/tingting/analysis4/current_trait";
-
-      
-
 
 # $highlight_file = "specieslist_for_treeplot.U_BodyLength"; $rainbow_X1 = 1.60;$rainbow_X2 = 1.63;
 # $highlight_file = "specieslist_for_treeplot.U_ITD"; $rainbow_X1 = 1.64;$rainbow_X2 = 1.67;
@@ -256,9 +379,29 @@ $highlight_tips_eqidistant = 0;#  0 = highlight tip at tip, 1= hoghligt tip outw
 # $highlight_file = "specieslist_for_treeplot.Sociality"; $rainbow_X1 = 1.72;$rainbow_X2 = 1.75;
 # $highlight_file = "specieslist_for_treeplot.Nest_location"; $rainbow_X1 = 1.76;$rainbow_X2 = 1.79;
 # $highlight_file = "specieslist_for_treeplot.Parasitism"; $rainbow_X1 = 1.80;$rainbow_X2 = 1.83;
- $highlight_file = "specieslist_for_treeplot.Lecty"; $rainbow_X1 = 1.84;$rainbow_X2 = 1.87;
+# $highlight_file = "specieslist_for_treeplot.Lecty"; $rainbow_X1 = 1.84;$rainbow_X2 = 1.87;
 
-# $highlight_file = "subject_species_list";
+# SYR, BL
+# $highlight_file = "point_colors"; $rainbow_X1 = 1.84;$rainbow_X2 = 2.2;
+
+# SYRPH 202206:
+# $highlight_file = "point_colors.LF"; $rainbow_X1 = 1.84;$rainbow_X2 = 2.2;
+
+# LECTY 202206:
+# $highlight_file = "study_species_with_barcodes.point_colors"; $rainbow_X1 = 1.84;$rainbow_X2 = 2.2;
+
+# TT1 Figure 3
+ $highlight_file = "subject_species_list";
+#####################################################################################################
+
+
+# ITOL3:
+$rainbow_X1 = 500;$rainbow_X2 = 1550; # $rainbow_X1 = 410;$rainbow_X2 = 415;
+
+# ITOL4 diptera:
+$rainbow_X1 = 1.008;$rainbow_X2 = 1.011;
+
+
 
 
 # file looks like:
@@ -266,9 +409,12 @@ $highlight_tips_eqidistant = 0;#  0 = highlight tip at tip, 1= hoghligt tip outw
 # OTU64	red
 # OTU65	gray
 
-$highlight_tips_type = 2; # 1=circle, 2=bar
-$colored_tip_bar_length = 0.005;
+$highlight_tips_type = 1; # 1=circle, 2=bar
+$colored_tip_bar_length = 0.01;
 
+my $text_shadow_offset = 0.000015; # when internal node labels are printed black text over white 
+				# which makes them move visable against black background, 
+				# this is ofset of white vs black text
 
 
 # $tip_bar_color = "brown"; 	# color now defined in the file, can be differnt for different otu
@@ -281,6 +427,14 @@ $colored_tip_bar_length = 0.005;
 # $highlight_file = "CN_obs.XJ"
 #	$rainbow_X1 = 1.08;$rainbow_X2 = 1.10;
 # $tip_bar_color = "brown";
+
+
+
+########################################################################################
+
+
+
+
 
 
 
@@ -306,8 +460,9 @@ $rectangular_plot_branch_width = 2.0;
 $rectangular_plot_tip_label_cex = 0.2;	# WP=0.6
 $rectangular_plot_support_circle_size = 1.2;
 $plot_tip_label_offset_rectangular	= 0.05; # dont start tip label but against node, little space
-$rectangular_tree_internal_label_cex = 10;# WP=0.6
-$print_internal_node_labels_on_rectangular_tree = 1;
+
+
+
 $print_tips_rectangular_tree = 0;
 $cartooned_clade_external_label_cex = 1.4;
 $rect_branch_color_default = "gray33";
@@ -320,7 +475,11 @@ $branchnumber = 1; # for vidify
 #############################################################################################
 
 
+
 # $collapse_nodes{"INTERNAL_NODE_997"} = "Beetles";
+
+
+
 # $collapse_nodes{"INTERNAL_NODE_1107"} = "Flies";
 # $collapse_nodes{"INTERNAL_NODE_1362"} = "Moths";
 # $collapse_nodes{"INTERNAL_NODE_1467"} = "Wasps";
@@ -362,8 +521,56 @@ text(-0.00904688199796051, -0.0145153449212619, col = \"black\", labels=\"Lepido
 read_command_arguments($arg_string);#
 #####################################
 
+#############################################################################################
+
+# these commands need to be run after reading command arguments, in case control file is included
+
+#######################################################################################
+# old way of writing:
+	# if no branch lengths, probably both -1.5,1.5 
+# $xlim_circ	= "c(2.2,2.4)"; $ylim_circ	= "c(0.00,0.40)"; # 
+
+# $image_settings 	= "png\(\"outfile_name.png\"\, 2000\, 2000\)\n";
+# $image_settings 	= "png\(\"outfile_name.png\"\, 8000\, 8000\)\n"; # upper limit is 10,000*10,000
+# TT video:
+# $image_settings	= "jpeg\(\"TT1_video.jpg\" , width = 1920 , height = 1080\)\n";
+# TT1 figure 3:
+# $image_settings 		= "pdf\(\"outfile_name.pdf\", 40, 40\)\npar\(mfrow=c\(1,2\)\)\n";
+#######################################################################################
 
 
+$plot_Y = $plot_Y_upper - $plot_Y_lower;
+$plot_X = $plot_X_right - $plot_X_left; # print "$plot_Y_upper, $plot_Y_lower, $plot_X_right, $plot_X_left, $plot_Y, $plot_X, $plot_division\n";
+$plot_division = $plot_Y/$plot_X;
+
+# JPEG:
+# $pdf_x = 6000; $pdf_y = $pdf_x * $plot_division;
+# $image_settings	= "jpeg\(\"printout.jpg\" , width = $pdf_x , height = $pdf_y\)\n";
+
+# OR PDF
+ $pdf_x = 40; # 80=0.8 mb; 40=same, though page view is smaller
+$pdf_y = $pdf_x * $plot_division;
+ $image_settings	= "pdf\(\"printout.pdf\" , $pdf_x , $pdf_y\)\n";
+
+
+$xlim_circ	= "c($plot_X_left,$plot_X_right)"; $ylim_circ	= "c($plot_Y_lower,$plot_Y_upper)";
+
+# R equivelent:
+# y1 <- -0.27; y2 <- 0.27; x1 <- 0.87; x2 <- 1.07
+# y <- y2-y1;x <- x2-x1;
+# pdf_x <- 6000;pdf_y <- pdf_x * (y/x)
+# pdf(file = "currentRplot.pdf", pdf_x , pdf_y)
+# png("backbone_plot.png", pdf_x , pdf_y)
+# jpeg("backbone_plot.jpg" , width = pdf_x , height = pdf_y,  res=1200)
+# tiff(filename = "fig6.tiff", width = pdf_x , height = pdf_y, units="px", res=80, compression = "jpeg")
+# par(mar=c(0, 0, 0, 0))
+# plot(0, type = "n", xlim = c(x1,x2), ylim = c(y1,y2), xlab = "",ylab = "",xaxt = "n", yaxt = "n", bty = "n")
+#######################################################################################
+
+
+
+
+############################################################################################
 
 %paint_clades;
 
@@ -382,7 +589,7 @@ my $paint_nodes_file = "/home/douglas/scripted_analyses/insect_temp_shifts/bayes
 
 $color_lineages_from_file = 0;
 my $color_lineages_file = "color_lineage_tax_list.blue";  # color_lineage_tax_list.blue 
-$color_lineages_this = "red";
+# $color_lineages_this = "red";
 
 
 
@@ -401,6 +608,17 @@ if($paint_clades_circular_tree == 1){paint_clades_circular_tree()};
 
 if($highlight_tips_from_file == 1)
 	{
+
+#	$bar_counts_file = $1;
+#	$highlight_tips_from_file = 1;
+#	$bar_counts = 1; 
+	if($bar_counts == 1)
+		{
+		$highlight_file = $bar_counts_file;
+		$highlight_tips_type = 2;
+		$highlight_tips_eqidistant = 1;
+		};
+
 	open(HF, $highlight_file) || die "\nerror 342. you specified highlight tips from file, but cant open file:$highlight_file\n";
 	while (my $line = <HF>)
 		{
@@ -413,7 +631,8 @@ if($highlight_tips_from_file == 1)
 		if($line =~ /^(\S+)\t([\w\d]+)/)
 			{
 			my $terminal = $1; my $colour_to_plot = $2;$highlight_tips{$terminal} = $colour_to_plot;
-			
+			if($colour_to_plot =~ /[0-9]/ && $colour_to_plot >= $max_count_for_terminal){$max_count_for_terminal = $colour_to_plot};
+
 			}elsif($line =~ /^(\S+)/)
 			{
 			my $terminal = $1; $highlight_tips{$terminal} = "red";
@@ -428,8 +647,11 @@ if($highlight_tips_from_file == 1)
 		};
 	close HF;
 
-my @highlight_keys = keys %highlight_tips;print "will try find $#highlight_keys tips to higlight\n";
-# 12_BD00927758 Ibidoecus_bisignatu Pielomastax_zheng Ancistronycha_abdominalis Brachythemis_contaminat Hydrochus_BBCCM42410_JN290349 Scaphidium_quadriguttatum Chorotypus_fenestratu Agabus_affinis Campanulotes_bidentatu Hesperobaenus_c
+my @highlight_keys = keys %highlight_tips;
+print "will try find $#highlight_keys tips to higlight\n";
+
+
+
 	};
 
 
@@ -437,6 +659,8 @@ my @highlight_keys = keys %highlight_tips;print "will try find $#highlight_keys 
 
 
 # $plot_cartoonized_clades = 1; # transfered to command arguments
+				# NB only works for rectangular plots
+
 
 if($plot_cartoonized_clades == 1)
 {
@@ -486,15 +710,41 @@ $cartoonize_clades{'INTERNAL_NODE_53'} = 'Sphecoidea';
 
 ###############################################################################################
 
+ # here, read terminals from set of standardized sourcetrees,
+ # this species set will be used on taxonomic plot.
 
+if($read_sourcetrees == 1)
+	{
+	print "\nuser opted to read terminals from set of sourcetrees\n";
+	my @sourcetrees_array = split /\s+/, $sourcetrees_list;
+	foreach my $sourcetree(@sourcetrees_array)
+		{
+		$sourcetree_index++;
+		my $path = $sourcetrees_path.$sourcetree;
+		open(SOURCETREE, $path) || die "\nerror, cant open sourcetree:$path\n";
+		print "\topened sourcetree $sourcetree_index path:$path\n";
+		while(my $line = <SOURCETREE>)
+			{
+			if($line =~ /\(/)
+				{
+				# print "current newick string:$line\n\n";
+				while($line =~ s/([\(\,])([A-Z][a-z]+_[a-z]+)/$1/)
+					{my $binomial = $2;$all_sourcetree_binomials{$binomial} = 1};
+				};
+			};
+		close SOURCETREE;
+		};
+	my @sourcetree_binomials_array = keys %all_sourcetree_binomials; @sourcetree_binomials_array = sort @sourcetree_binomials_array;
+	# foreach my $species(@sourcetree_binomials_array){print ""};
+	print "\ncount total species encountered over set of sourcetrees: $#sourcetree_binomials_array\n\n";
 
-
-
-
-
-
+	};
 
 #######################################################################################################3
+
+
+
+
 
 
 #######################################################################################################3
@@ -534,6 +784,8 @@ $ignore_subspecies			= 1;
 %ncbi_nodes;	# ncbi taxonomy structure is recorded in this object
 %assign_these_new_terminals_to_taxon;
 
+unless($audify_tree==1)
+	{
 ###############
 store_nodes();#
 parse_namesfile();#
@@ -548,6 +800,7 @@ $starting_name =~ s/^(\w).+$/$1/;
 traverse_nodes($starting_node , $starting_name);#
 #################################################
 
+	};
 
 #######################################################################################################3
 
@@ -580,6 +833,17 @@ print "polytomies_randomly_resolved:$polytomies_randomly_resolved\n";
 			# Pol rooted at INTERNAL_NODE_2609
 
 
+if($list_boot_support == 1)
+	{
+	open(OUT_BOOT, ">listed_terminal_placement_support") || die "\nerror 636.\n";
+	my @terminal_IDs  = keys %support_of_terminal_placement;@terminal_IDs = sort @terminal_IDs;
+	foreach my $ID(@terminal_IDs)
+		{
+		my $support = $support_of_terminal_placement{$ID};
+		print OUT_BOOT "$ID\t$support\n";
+		};
+	close OUT_BOOT;
+	};
 
 
 # $combine_node_label_tree = $1; 
@@ -611,15 +875,30 @@ open(LOG, ">$outprefix.process_newick_LOG") || die "";
 print LOG "current_node_ID\tcount_termnials\tshared_tobycode\tshared_lineage\n";
 print "\ncalling assign_names_to_internal_nodes with $traversal_start_node , New_Root\n";
 
+if($bayestraits_AddTag ==1)
+	{
+	open(BAYESTRAITS_ADDTAG, ">Internal_node_IDs.bayestraits_addtag_format") || die "\nerror 789\n";
+	};
+
 # In addition to names, this sub makes terminal counts and write in object count_terminals_node_lable. These are used extensivly in plotting.
+# and sums root to tip dist, used later for scaling plots
+
 
 #######################################################################
-assign_names_to_internal_nodes($traversal_start_node , "New_Root");#
+assign_names_to_internal_nodes($traversal_start_node , "New_Root", 0);#
 #######################################################################
 
+print "
+node with most decendents ($max_terminals)
+duplication_errors:$duplication_errors\n";
 close LOG;
 
-
+if($bayestraits_AddTag ==1)
+	{
+	foreach my $tag(@bayestraits_tags){print BAYESTRAITS_ADDTAG "AddNode $tag $tag\n"}; # AddNode RecNodeTAG_0 TAG_0
+	close BAYESTRAITS_ADDTAG;
+	die "\n\njust writing process newick node definintions in bayestraits addtag format. quitting\n";
+	};
 
 
 if($identify_nodes_via_decendents == 1)
@@ -632,8 +911,28 @@ if($identify_nodes_via_decendents == 1)
 		};
 	};
 
-
-
+######################################
+# 20230906: 	Already have counts of decendents for each internal node (%count_terminals_node_lable), 
+#		which is used a lot in plotting variables. 
+#		Need to have these also as ranks.
+my @internal_node_IDs_array = keys %count_terminals_node_lable; @internal_node_IDs_array = sort @internal_node_IDs_array;
+foreach my $ID(@internal_node_IDs_array)
+	{
+	my $count = $count_terminals_node_lable{$ID};
+	$nodeIDs_for_each_descendent_count{$count} .= "$ID\t";
+#	print "$ID\t$count\n";
+	};
+my @counts_array = keys %nodeIDs_for_each_descendent_count;@counts_array = sort { $a <=> $b } @counts_array;
+$max_rank_decendent_counts = 2;
+foreach my $count(@counts_array)
+	{
+	my $IDs_list = $nodeIDs_for_each_descendent_count{$count};$IDs_list =~ s/\t+$//;
+	my @splitlist = split /\t+/, $IDs_list;
+	foreach my $ID(@splitlist){$rank_decendent_counts_for_internalnode{$ID} = $max_rank_decendent_counts};
+	# print "\ncount:$count, rank:$rank IDs:$IDs_list\n";
+	$max_rank_decendent_counts++;
+	};
+######################################
 
 
 
@@ -674,6 +973,83 @@ if($sonify == 1)
 	};
 
 
+
+
+############################################################################################################################################
+
+if($write_taxa_to_internal_nodes == 1)
+	{
+	print "\nuser opted to assign taxonomic names to internal nodes of input tree, and write these as node labels to new newick outfile.\n";	
+
+	$backbone_with_internal_taxlabels = "($root_node)";
+	$backbone_terminals_encountered = 0;
+##################################################################################
+write_taxnames_to_internal_nodes($traversal_start_node, "New_Root");#
+##################################################################################
+
+print "
+backbone_terminals_encountered:$backbone_terminals_encountered
+";
+
+$backbone_with_internal_taxlabels =~ s/^\((.+)\)$/$1/;
+
+open(OUTTREE3, ">intree_with_taxlabels_on_internal_nodes") || die "";
+print OUTTREE3 "$backbone_with_internal_taxlabels;\n";
+close OUTTREE3;
+
+sub write_taxnames_to_internal_nodes
+{
+my $current_node = $_[0];my $from_parent = $_[1]; my $steps_to_tip = $_[2];$steps_to_tip++;
+my $count_connections = $child_counts{$current_node};
+
+my @next1 = ();
+my %check_duplication = ();
+for my $all_connections(0 .. $count_connections)
+	{
+	my $connecting_node = $nodes{$current_node}{$all_connections};
+	if(exists($check_duplication{$connecting_node})){die "\nduplication error:$connecting_node\n"};
+	$check_duplication{$connecting_node} = 1;
+	if($from_parent eq "New_Root")
+		{
+		push @next1, $connecting_node; # first node encountered, need all connecting nodes
+		}else{
+		unless($connecting_node eq $from_parent){push @next1, $connecting_node};	
+		};
+	};
+
+my $internal_label23 = "";
+if($intree_internal_ranktaxon{$current_node} =~ /\w/)
+	{
+	# Rank, Taxon
+	$internal_label23 = "$intree_internal_ranktaxon{$current_node}";
+	# NodeID, Rank, Taxon
+	$internal_label23 = "$current_node$intree_internal_ranktaxon{$current_node}"; # print "internal_label23:$internal_label23\n";
+	};
+my @child_nodes23 = @next1;
+my $join_child_nodes = join ',', @child_nodes23;
+$swap_string = "($join_child_nodes)$internal_label23";
+$backbone_with_internal_taxlabels =~ s/$current_node(\W)/$swap_string$1/;
+
+for my $index(0 .. $#next1)
+	{
+	my $test = $next1[$index];
+	if($test =~ /^INTERNAL_NODE_/)
+		{
+		#######################################################################
+		write_taxnames_to_internal_nodes($test , $current_node );# recurse
+		#######################################################################
+		}else{
+		$backbone_terminals_encountered++;	
+		};
+	};
+return();
+};
+
+
+	print "\nFIN.\n";exit;
+	}; # if($write_taxa_to_internal_nodes == 1)
+############################################################################################################################################
+
 if($plot_tree == 1)
 	{
 	print "\nuser opted to PLOT TREE. intiating newick strings and plotting commands.... ";
@@ -689,8 +1065,14 @@ $draw_tree_R_commands_tip_labels = "";
 library(\"plotrix\")
 library(mapplots)
 
-colorfunc = colorRamp(c(\"blue\",\"white\",\"red\"))
+colorfunc = colorRamp(c(\"grey\",\"red\"))
+colorfunc2 = colorRamp(c(\"white\", \"aquamarine\"))
+
+
 ";
+# colorfunc = colorRamp(c(\"blue\",\"white\",\"red\"))
+
+
 	print OUT8 $image_settings;
 	print OUT8 "plot(0, type = \"n\", xlim = $xlim_circ, ylim = $ylim_circ,";
 	print OUT8 " xlab = \"\",ylab = \"\",xaxt = \"n\", yaxt = \"n\", bty = \"n\")\n";
@@ -712,28 +1094,37 @@ colorfunc = colorRamp(c(\"blue\",\"white\",\"red\"))
 	};
 
 
-print "calling sub traverse_tree, start node:$traversal_start_node\n";# builds up new newick strings
 
 open(NODE_LOG, ">process_newick.node_log") || die "\nerror 373.\n";
 
 open(VIDIFY, ">vidify_table") || die "";
-# open(VIDIFY2, ">vidify_table2") || die "";
+open(VIDIFY2, ">vidify_table2") || die ""; # different branch/tone style based on single angled line for each child
 
 # if rerooting, count of number of terminals from new root, needs redefining. 
 # $count_terminals_node_lable
 
+$max_distance_root_to_tip;
+
+
+if($scale_branchlengths == 1)
+	{$plot_root_node_branchlength = $plot_root_node_branchlength * $scale_bl_value};
+
+print "calling sub traverse_tree, start node:$traversal_start_node\n";# builds up new newick strings
 
 ######################################################
 	#     $current_node;          $from_parent;     $sum_branchlength;                  $node_plot_y 
-traverse_tree($traversal_start_node , "New_Root" ,      $plot_root_node_branchlength ,      1 ,           $default_node_color  ,  0 );
+traverse_tree($traversal_start_node , "New_Root" ,      $plot_root_node_branchlength ,      $starting_node_plot_y ,           $default_node_color  ,  0 );
 ######################################################
 
 print "
-\tnodes_traversed:$nodes_traversed\n";
+\tnodes_traversed:$nodes_traversed
+\tmax_distance_root_to_tip:$max_distance_root_to_tip
+\n";
+
 
 close NODE_LOG;
 close VIDIFY;
-# close VIDIFY2;
+close VIDIFY2;
 
 
 
@@ -851,16 +1242,24 @@ if($plot_tree == 1)
 
 		};
 
+if($plot_internal_scales == 1)
+	{
+	internal_scales();
+	};
 
 
+	# OUT8 is r_commands_filename
+
+	print OUT8 $draw_tree_R_commands_internal_scales;
 	print OUT8 $draw_tree_R_commands;
 	print OUT8 $R_commandtip;
 	print OUT8 $draw_tree_R_commands3;
 	print OUT8 $draw_tree_R_commands4;
 	print OUT8 $draw_tree_R_commands4b;
-	print OUT8 $draw_tree_R_commands6;
-	print OUT8 $draw_tree_R_commands7;
+	print OUT8 $draw_tree_R_commands4c;
 	print OUT8 $draw_tree_R_commands_tip_labels;
+	print OUT8 $draw_tree_R_commands6; # prob includes internal tax labels
+	print OUT8 $draw_tree_R_commands7;
 	print OUT8 $draw_clades_climate;
 
 	print OUT8 "dev\.off\(\)\n";close OUT8;
@@ -877,6 +1276,8 @@ if($plot_tree == 1)
 	print "\n\nplot_tree == 1, written r commands:
 	R < r_commands_filename --vanilla --slave\n\tOR:
 	R < r_commands_filename_RECTANGL --vanilla --slave\n\tquitting.\n";
+
+	system("R < r_commands_filename --vanilla --slave");
 	exit;
 	};
 
@@ -1037,10 +1438,14 @@ sub record_tree3
 my $treefile = shift;
 print "sub record_tree3\n";
 my $tree1= "";
+my $tree_found_in_file=0;
 open(IN, $treefile) || die "\n\nerror 561 cant open file named:$treefile\n\n";
-while (my $line = <IN>)
-	{if($line =~ /(.+\(.+)/){$tree1 = $1}};
+while (my $line = <IN>) 
+	{
+	if($line =~ /(.+\(.+)/){$tree1 = $1;$tree_found_in_file=1} 
+	};
 close(IN);
+if($tree_found_in_file == 0){die "\n\nerror 1264. cant find any tree in the file you specified:$treefile\n\n"};
 $tree1 =~ s/ //g;$tree_length = length($tree1);
 
 print "\nnewick string of length $tree_length has been read from file:$treefile\n\n";
@@ -1146,15 +1551,26 @@ my $newick_string 	= $tree1;
 
 print "\nreading Newick tree ....\n";
 
-while ($newick_string =~ s/\(([^\(\)]+)\)([0-9\.]*)/INTERNAL_NODE_$interal_node/)
+# working:
+# while ($newick_string =~ s/\(([^\(\)]+)\)([0-9\.]*)/INTERNAL_NODE_$interal_node/)
+
+# 20220823: need to read node labels:
+while ($newick_string =~ s/\(([^\(\)]+)\)([\łA-Za-z0-9\._]*)/INTERNAL_NODE_$interal_node/)
 	{# no point reading the adjacent branchlength, 
 		# since the identity of the node to which it connects, is not known at this stage,
 		# so read lengths to child nodes.
 
-	my $node = $1; my $support = $2;my $nodeID = "INTERNAL_NODE_$interal_node"; #print "nodeID:$nodeID node:$node\n";
+	my $node = $1; my $support = $2;my $nodeID = "INTERNAL_NODE_$interal_node"; # print "\nnodeID:$nodeID node:$node\n";
 	my @child_nodes = split /\,/ , $node;
 	$child_counts{$nodeID} = $#child_nodes;#	print "\nnodeID:$nodeID \@child_nodes:@child_nodes\n";
 	$node_support{$nodeID} = $support;#	print "\nnodeID:$nodeID \@child_nodes:@child_nodes\n";
+	# print "assigning value $support to key $nodeID\n";
+
+	if($support =~ /[A-Za-z]/)
+		{
+		$native_node_labels{$nodeID} = $support;# print "\tnative_node_label:($support)\n";
+		};
+
 	if($#child_nodes >= 2)
 		{
 		$polytomies++;$polytomy_IDs{$nodeID} = 1
@@ -1163,8 +1579,17 @@ while ($newick_string =~ s/\(([^\(\)]+)\)([0-9\.]*)/INTERNAL_NODE_$interal_node/
 
 	unless($#child_nodes == 1)
 		{
-		print "non bifurcating, node $interal_node, count child nodes $#child_nodes\n";
-		if(length($node)< 100){print "\toffending node:$node\n"};
+		if($#child_nodes == 0)
+			{
+			print "you have an unneccessary node (only one child) in your tree. node id:$interal_node\n";
+			}else{
+			# currently printing taxonomic trees, these are normal:
+		#	print "non bifurcating, node $interal_node, count child nodes $#child_nodes\n";
+			}
+		if(length($node)< 100)
+			{
+		#	print "\toffending node:$node\n"
+			};
 		};
 
 	if($interal_node =~ /0000$/){print "\tnodeID:$nodeID count_child_nodes:" , scalar @child_nodes , " bls_read:$bls_read minimum_branchlength:$minimum_branchlength maximum_branchlength:$maximum_branchlength\n"};
@@ -1238,6 +1663,7 @@ while ($newick_string =~ s/\(([^\(\)]+)\)([0-9\.]*)/INTERNAL_NODE_$interal_node/
 		unless($current_child =~ /^INTERNAL_NODE_/)
 			{
 			$terminal_labels{$current_child}++;
+			$support_of_terminal_placement{$current_child} = $support;
 			if($terminal_labels{$current_child}>= 2)
 				{
 				$duplicated_terminal_labels++;
@@ -1277,8 +1703,9 @@ while ($newick_string =~ s/\(([^\(\)]+)\)([0-9\.]*)/INTERNAL_NODE_$interal_node/
 			};
 		};
 
-	$root_node = $nodeID;
-	$interal_node++;
+	$root_node = $nodeID;	$interal_node++;
+		
+#	print "$newick_string\n";
 
 	};#while ($newick_string =~
 
@@ -1329,7 +1756,7 @@ if($multiply_all_branchlengths >= 1.1)
 
 
 
-unless($interal_node >= 2){die "\nerror reading your phylogeny.\n"}
+unless($interal_node >= 2){die "\nerror 1568. appears phylogeny (file $treefile) not read correctly (\$interal_node == $interal_node).\n"}
 
 
 }#sub record_tree2
@@ -1379,8 +1806,10 @@ my $count_connections = $child_counts{$current_node};
 $subtree_newick_string = "($current_node)";
 $nodes_traversed++;
 
-
-
+if($plot_tree == 1)
+	{
+#	$screenprint++;if($screenprint =~ /000$/){print "\tY:$node_plot_y\n"};
+	};
 
 if(exists($paint_clades{$current_node})){$node_colour = $paint_clades{$current_node}};
 
@@ -1435,7 +1864,7 @@ my %check_duplication = ();
 for my $all_connections(0 .. $count_connections)
 	{
 	my $connecting_node = $nodes{$current_node}{$all_connections};
-	if(exists($check_duplication{$connecting_node})){die "\nduplcaution error:$connecting_node\n"};
+	if(exists($check_duplication{$connecting_node})){die "\nduplication error 1:$connecting_node\n"};
 	$check_duplication{$connecting_node} = 1;
 
 	unless($connecting_node =~ /[\w\d]/)
@@ -1537,8 +1966,9 @@ if($join_the_child_nodes =~ /_2288/)
 my @next2 = @next1;
 
 # bifurcation working:
-if ($#next2 == 1)
+if ($#next1 == 1)
 {
+
 if($count_terminals_node_lable{$next1[1]} >= $count_terminals_node_lable{$next1[0]})
 	{
 	$next2[0] = $next1[0];$next2[1] = $next1[1];
@@ -1546,21 +1976,39 @@ if($count_terminals_node_lable{$next1[1]} >= $count_terminals_node_lable{$next1[
 	$next2[0] = $next1[1];$next2[1] = $next1[0];
 	};
 }else{
-
-# quick hack for partial laderisation of trichotomies, dont have time to figure out how to do perfectly for any polytomies
-if($count_terminals_node_lable{$next1[2]} >= $count_terminals_node_lable{$next1[0]} && 
-	$count_terminals_node_lable{$next1[2]} >= $count_terminals_node_lable{$next1[1]}	)
+############################################################
+# 20230904: fixed laderization for polytomies
+my %ordered_node_IDs = ();
+for my $p(0 .. $#next2)
 	{
-	# last one already biggest, do nothing.	
-	}elsif($count_terminals_node_lable{$next1[1]} >= $count_terminals_node_lable{$next1[0]} && 
-	$count_terminals_node_lable{$next1[1]} >= $count_terminals_node_lable{$next1[2]}	){
-	# 1 is biggest, needs to go to last one
-	$next2[2] = $next1[1];$next2[1] = $next1[2];	
-	}else{
-	# 0 is bigggest, needs to go last
-	$next2[2] = $next1[0];$next2[0] = $next1[2];	
-
+	my $childcounts = 	$count_terminals_node_lable{$next1[$p]};
+	unless($childcounts =~ /\d/){$childcounts = 0}; # print "index:$p, nodeID:$next1[$p], count decendents:$childcounts\n";
+	$ordered_node_IDs{$childcounts} .= "$next1[$p]\t";
 	};
+my @ordered_nodeID_keys = keys %ordered_node_IDs;@ordered_nodeID_keys = sort { $b <=> $a } @ordered_nodeID_keys;
+my $push_index =0;
+foreach my $key78(@ordered_nodeID_keys)
+	{
+	my $listIDs9 = $ordered_node_IDs{$key78};$listIDs9 =~ s/\t+$//;
+	my @splitobject = split /\t+/, $listIDs9;
+	foreach my $object5(@splitobject)
+		{
+		 $next2[$push_index]= $object5;$push_index++; # print "\tpushing $object5\n";
+		};
+	# print "ordered:$key78\t$ordered_node_IDs{$key78}\n";
+	};
+############################################################
+
+# # quick hack for partial laderisation of trichotomies, dont have time to figure out how to do perfectly for any polytomies
+# if($count_terminals_node_lable{$next1[2]} >= $count_terminals_node_lable{$next1[0]} && 
+# 	$count_terminals_node_lable{$next1[2]} >= $count_terminals_node_lable{$next1[1]}	)
+# 	{# last one already biggest, do nothing.	
+# 	}elsif($count_terminals_node_lable{$next1[1]} >= $count_terminals_node_lable{$next1[0]} && 
+# 	$count_terminals_node_lable{$next1[1]} >= $count_terminals_node_lable{$next1[2]}	){ # 1 is biggest, needs to go to last one
+# 	$next2[2] = $next1[1];$next2[1] = $next1[2];	
+# 	}else{
+# 	$next2[2] = $next1[0];$next2[0] = $next1[2]; # 0 is bigggest, needs to go last
+# 	};
 
 };
 # print "\@next2:@next2
@@ -1635,11 +2083,24 @@ if(
 	print NODE_LOG "$current_node\t$sum_branchlength\t$count_terminals_from_node\t$taxon_assigned_to_node\t$lineage_assigned_to_node\t$list_terminals_in_subtree\n";
 	};
 
-###########################################3
-
-
-
-
+###########################################
+# here figure out if all child nodes of current node are terminals. 
+# if so and user specified, will collapse, thus wont go through subsequent loop.
+# terminus adjacent things plotted as normal= 3.3; removed file size = 1.6 mb; 
+my $terminus_adjacent=0;
+if($collapse_terminus_adjacent==1)
+	{
+	$terminus_adjacent=1;
+	for my $index(0 .. $#next2)
+		{
+		my $test = $next2[$index];
+		if($test =~ /^INTERNAL_NODE_/){$terminus_adjacent=0}elsif($test =~ /\w/){};
+		};
+	}else{
+	$terminus_adjacent=0;
+	};
+###########################################
+my $lowest_Y = 999999999;my $highest_Y = -999999999;my $store_Xend;
 
 
 for my $index(0 .. $#next2)
@@ -1694,47 +2155,129 @@ for my $index(0 .. $#next2)
 			};
 		$delta_y = ($terminals_from_parent / 2) - $distance;
 		$assign_new_y = $node_plot_y + $delta_y;
+		if($assign_new_y >= $highest_Y){$highest_Y= $assign_new_y};if($assign_new_y<=$lowest_Y){$lowest_Y= $assign_new_y};
+
 
 #		};
 
 	my $branchlength_to_child;
+
+	# $max_steps_to_tip assigned to %nodes_to_tip_from_current in sub assign_names_to_internal_nodes
 	my $count_nodes_to_tip_from_current = $nodes_to_tip_from_current{$test} + 1;
-	my $remaining = 1 - $sum_branchlength;
+
+	my $remaining; # = 1 - $sum_branchlength; # remaining is length from branch left to tree terminus
+	$remaining = 1 - $sum_branchlength;
+	my $which_bl_adjustment; # print "\tsum_branchlength:$sum_branchlength remaining:$remaining\n";
+
 
 
 	if($plot_trees_with_branchlengths == 1)
 		{
-
+		##################
 		my $default_bl = 0.00001;
 		my $bl = $default_bl;
-		if(exists($branchlengths{$current_node}{$test}))
-			{$bl = $branchlengths{$current_node}{$test}};
-		$branchlength_to_child = $bl;
-		
+		if(exists($branchlengths{$current_node}{$test})){$bl = $branchlengths{$current_node}{$test}};
+		$branchlength_to_child = $bl;$which_bl_adjustment=1;
+		##################
 		}else{
-		if($count_nodes_to_tip_from_current >= 1)
+		##################
+		if($count_nodes_to_tip_from_current >= 2)
 			{
-			$branchlength_to_child = $remaining / $count_nodes_to_tip_from_current;
+			$branchlength_to_child = $remaining / $count_nodes_to_tip_from_current;$which_bl_adjustment=2;
+			 # print "branchlength_to_child:$branchlength_to_child\n";
 			}else{
-			$branchlength_to_child = 0.01;
-			};
+			# seems not encountered where if($count_nodes_to_tip_from_current >= 1)
+			# prev, though doesnt result in lined up terminals for trees with no bls:
+			# $branchlength_to_child = $default_terminal_branchlength;$which_bl_adjustment=3;
+			# 20230804: following seems to work
+			$branchlength_to_child = $remaining / $count_nodes_to_tip_from_current;$which_bl_adjustment=2;
 
+			};
+		##################
 		};
 
+	if($plot_grafts ==1)
+	{
+	# 20220823: new code for denoting grafted nodes by jumping x axis
+	if($native_node_labels{$test} =~ /\w/)
+		{
+		$branchlength_to_child =  $graft_label_width;  $which_bl_adjustment .= "_4";
+		}else{
 
-	my $assign_new_x = $sum_branchlength+$branchlength_to_child;
+
+		 if($native_node_labels_within_clade{$test} == 1)
+			{
+			$which_bl_adjustment .= "_5";
+			$branchlength_to_child = $graft_branchlength1;
+			}else{
+			$branchlength_to_child = $branchlength_to_child * 0.1; $which_bl_adjustment .= "_6";
+			 
+			$branchlength_to_child = $graft_branchlength2;
+
+			};
+
+
+		};
+	};
+
+	if($scale_branchlengths >= 1) # default off
+		{$branchlength_to_child = $branchlength_to_child * $scale_bl_value};
+
+	if($branchlength_to_child < 0)
+		{
+		print "error 1865 negatvie bl:$branchlength_to_child\n";
+	#	$branchlength_to_child =~ s/\-//;
+		}
+
+
+
+	my $assign_new_x = $sum_branchlength + $branchlength_to_child; $store_Xend = $assign_new_x;# print "test:$test which_bl_adjustment:$which_bl_adjustment branchlength_to_child:$branchlength_to_child\n";
+
+	###############################################################
+	# Iternal node support plotting code
+	my $current_node_support = "NA";
+	if($test =~ /^INTERNAL_NODE_/)
+		{
+		if($node_support{$test} =~ /./) # note these are any node labels, not just numerical support
+			{
+			$current_node_support = $node_support{$test}; $node_support_retreived++; # print "node label retreived:$current_node_support\n";
+			}else{};
+		};
+	###############################################################
+
+
+
+
+
+	if($assign_new_x >= $max_distance_root_to_tip){$max_distance_root_to_tip = $assign_new_x};
 
 	#################################################################
 
+	my $submit_x_left 	= $sum_branchlength;
+	my $submit_x_right 	= $assign_new_x;
 
 	if($plot_tree == 1)
 		{
+
+		if($plot_grafts ==1 && $native_node_labels{$test} =~ /\w/)
+			{$graftify_branch=1}else{$graftify_branch=0};
+
+		if($terminus_adjacent==1)
+			{
+			# all child node of current are terminals, will collapse.
+
+
+			}else{
+
 		###################################################################################################################################################
 			# Variable names when inside following sub (very similar):
 			#                   0      1             2               3       4             5                   6               7               8                   9                   10             11                  12                                13                              14                      15
 			#                   test   current_node  scalar_next1    index   node_plot_y   sum_branchlength    assign_new_x    assign_new_y    abreviate_nodeID    internal_taxname    node_colour    cartoonize_clade    min_distance_to_tip_for_subtree   max_distance_to_tip_for_subtree   combined_node_label, terminals_from_child
-		get_tree_plotting_commands($test, $current_node, scalar @next1, $index, $node_plot_y, $sum_branchlength , $assign_new_x , $assign_new_y , $abreviate_nodeID , $internal_taxname , $node_colour , $cartoonize_clade , $min_distance_to_tip_for_subtree, $max_distance_to_tip_for_subtree, $combined_node_label, $terminals_from_child);#
+		get_tree_plotting_commands($test, $current_node, scalar @next1, $index, $node_plot_y, $submit_x_left , 	  $submit_x_right, $assign_new_y , $abreviate_nodeID , $internal_taxname , $node_colour , $cartoonize_clade , $min_distance_to_tip_for_subtree, $max_distance_to_tip_for_subtree, $combined_node_label, $terminals_from_child, $current_node_support);#
 		###################################################################################################################################################
+			};
+
+
 		};
 
 
@@ -1768,6 +2311,52 @@ for my $index(0 .. $#next2)
 
 
 	}; # for my $index(0 .. $#next2)
+
+	
+if($terminus_adjacent==1)
+	{			# all child node of current are terminals, will collapse.
+
+	my $width3 = $width;
+	if($metacoder_node_points =~ /[234]/ && $rank_decendent_counts_for_internalnode{$current_node} =~ /\d/)
+		{
+		$nodesize_proportion =  ($rank_decendent_counts_for_internalnode{$current_node} / $max_rank_decendent_counts)*$metacoder_branch_thickness_scale_factor;
+		$width3 = $width*$nodesize_proportion
+		}else{
+		};
+
+	my $nodecolor = $node_colour;
+
+
+	my $y1_proportion = (($highest_Y-(($highest_Y-$lowest_Y)*0.5)) / $count_terminals)+1;$y1_proportion *= $multipleier;$y1_proportion -= $clock_adjust;
+	my $Xstart 	= $sum_branchlength * cos($y1_proportion);my $Ystart 	= $sum_branchlength * sin($y1_proportion);
+	my $y2_proportion = ($highest_Y / $count_terminals)+1;$y2_proportion *= $multipleier;$y2_proportion -= $clock_adjust;
+	my $Xend1 	= $store_Xend * cos($y2_proportion);my $Yend1 	= $store_Xend * sin($y2_proportion);
+	my $y2_proportion = ($lowest_Y / $count_terminals)+1;$y2_proportion *= $multipleier;$y2_proportion -= $clock_adjust;
+	my $Xend2 	= $store_Xend * cos($y2_proportion);my $Yend2 	= $store_Xend * sin($y2_proportion);
+
+	if($store_node_colors{$current_node} =~ /\w/)
+		{
+		
+		$R_command =  "$store_node_colors{$current_node};segments(" . "$Xstart, $Ystart , $Xend1, $Yend1 , col = colors2, lwd = $width3)\n";$draw_tree_R_commands4 .=$R_command;
+		$R_command =  "segments(" . "$Xstart, $Ystart , $Xend2, $Yend2 , col = colors2, lwd = $width3)\n";$draw_tree_R_commands4 .=$R_command;
+		$R_command =  "segments(" . "$Xend1, $Yend1 , $Xend2, $Yend2 , col = colors2, lwd = $width3)\n";$draw_tree_R_commands4 .=$R_command;
+
+				#if($branch_color_command =~ /\w/)
+				#	{
+				#	$R_command =  "$branch_color_command;segments(" . "$SEG_XS, $SEG_YS , $SEG_XE, $SEG_YE , col = colors2, lwd = $width3)\n";
+				#	}else{
+				#	$R_command =  "segments(" . "$SEG_XS, $SEG_YS , $SEG_XE, $SEG_YE , col = \"$node_colour\", lwd = $width3)\n";
+				#	};
+
+
+		}else{
+		$R_command =  "segments(" . "$Xstart, $Ystart , $Xend1, $Yend1 , col = \"$nodecolor\", lwd = $width3)\n";$draw_tree_R_commands4 .=$R_command;
+		$R_command =  "segments(" . "$Xstart, $Ystart , $Xend2, $Yend2 , col = \"$nodecolor\", lwd = $width3)\n";$draw_tree_R_commands4 .=$R_command;
+		$R_command =  "segments(" . "$Xend1, $Yend1 , $Xend2, $Yend2 , col = \"$nodecolor\", lwd = $width3)\n";$draw_tree_R_commands4 .=$R_command;
+		};
+
+	};
+
 
 
 
@@ -2116,7 +2705,14 @@ unless($tree =~ /\(\w/){die "\nerror, sub process_tree called with no tree.\n"}
 
 		}else{
 		$newick_binomials_for_which_taxonomies_not_found++;	
-		print "no lineage found for binomial:$binomial or genus:$genus\n";
+		$printlimit82++;
+		if($printlimit82 < 50)
+			{
+			print "no lineage found for binomial:$binomial or genus:$genus\n";
+			}elsif($printlimit82 == 50)
+			{
+			print "not printing more of this error ..... \n\n";
+			};
 		};
 
 
@@ -2252,6 +2848,8 @@ if($arguments =~ /-outprefix\s+(\S+)/)
 	die "\ncommand error\n";
 	};
 
+
+# following seems unused (unfinished?)
 $sonify = 0;$sonify_file;
 if($arguments =~ /-sonify\s+(\S+)/) # intree already specified, here give the output file. 
 	{
@@ -2274,6 +2872,11 @@ and input this here with the option -node taxon_number
 if($arguments =~ /-plot_tree/)
 	{
 	$plot_tree	= 1;print "plot_tree\n";
+
+	if($arguments =~ /-plot_grafts/)
+		{
+		$plot_grafts =1;
+		};
 	}
 
 if($arguments =~ /-multiply_all_branchlengths\s+(\d+)/)
@@ -2288,8 +2891,47 @@ if($arguments =~ /-highlight_tip_string_match\s+(\S+)/)
 	print "highlight_tip_string_match:$tip_string_to_highlight\n";
 	};
 
+if($arguments =~ /-bar_counts\s+(\S+)/)
+	{
+	$bar_counts_file = $1;
+	$highlight_tips_from_file = 1;
+	$bar_counts = 1; 
+
+#	print "\nuser specified to plot bars representing counts for terminals\n";
+#	open(BARFILE, $bar_counts_file) || die "\nerror 2492. cant open file ($bar_counts_file).\n";
+#	while(my $line = <BARFILE>)
+#		{
+#		$line =~ s/\n//;$line =~ s/\r//;
+#		if($line =~ /^(\S+)\t(\S+)/) # 
+#			{my $sp = $1; my $count = $2; $terminal_bar_counts{$sp} = $count; $number_terminal_with_count++};
+#		};
+#	close BARFILE;
+#	print "number_terminal_with_count:$number_terminal_with_count\n"; # die "";
+	};
 
 
+if($arguments =~ /-internal_support_as_points/)
+	{
+	$internal_support_as_points = 1;
+	};
+
+if($arguments =~ /-list_boot_support/)
+	{
+	$list_boot_support = 1;
+	if( $remove_node_support_from_input_tree == 1)
+		{
+		die "\nerror, you have specified list boot support but also optioned to remove boot support from intree\n"
+		}
+	};
+
+
+if($arguments =~ /-bayestraits_AddTag/)	{$bayestraits_AddTag =1};
+
+
+
+
+##############################################################################################################################
+#			bayestraits data input 2  bayestraits results
 # -piechart_trait_prob BOLD_speciestraits2.U_ITD BayesTraits.tip_predictions.U_ITD.0.5.out2
 if($arguments =~ /-piechart_trait_prob\s+(\S+)\s+(\S+)/)
 	{
@@ -2335,8 +2977,73 @@ if($arguments =~ /-piechart_trait_prob\s+(\S+)\s+(\S+)/)
 	close IN_TRAIT_B;
 	#####################################################################
 	};# if($arguments =~ /-piechart_trait_prob\s+(\S+)\s+(\S+)/)
-
 # $known_state{$sp}; $predicted_state{$sp} = "A"; $state_probabilities_for_pie{$sp}{$pr} = $p;
+##############################################################################################################################
+
+
+
+##############################################################################################################################
+if($arguments =~ /-piechart_probs_internalnodes\s+(\S+)\s+(\S+)/)
+	{
+	$traitfileA = $1;$traitfileB = $2;
+	$piechart_probs_internalnodes = 1; $piechart_trait_prob = 1;
+	print "\nuser specified to make piecharts from probabilities for internal nodes\n";
+
+	#####################################################################
+	# this file gives known states
+	open(IN_TRAIT_A, $traitfileA) || die "\nerror 2266. cant open file ($traitfileA).\n";
+	while(my $line = <IN_TRAIT_A>)
+		{
+		# OTU_HCL0293	?
+		# OTU_HCL0295	?
+		# OUTGROUP	-
+		# Osmia_aglaia	C
+		$line =~ s/\n//;$line =~ s/\r//; # print "$line\n";
+		if($line =~ /^(\S+)\t([A-Z])/) # used to have [A-Z]+, but this picks up where multiple states, and complicates things
+			{my $sp = $1; my $st = $2; $known_state{$sp} = $st;$all_states_for_pie{$st} = 1;$known_states_stored++ };
+		};
+	close IN_TRAIT_A;
+print "known_states_stored:$known_states_stored\n";
+# must sort following, because pie plotting function default sorts, thus mixing colors if this object unsorted. 
+#  will need to check works ok when irregular characters used
+@all_states_for_pie_array = keys %all_states_for_pie;@all_states_for_pie_array = sort @all_states_for_pie_array;
+
+	#####################################################################
+	# this file gives predicted states.
+	open(IN_TRAIT_B, $traitfileB) || die "\nerror 2283. cant open file ($traitfileB).\n";
+	while(my $line = <IN_TRAIT_B>)
+		{
+		$line =~ s/\n//;$line =~ s/\r//; # print "$line\n";
+#INTERNAL_NODE_981	M:0.486512402000001	O:0.117331153	P:0.396156415	
+#INTERNAL_NODE_982	M:0.251228488	O:0.0539997450000001	P:0.694771767	
+
+		if($line =~ /^(\S+)\t(.+)/)
+			{
+			my $species = $1; my $state_probs = $2;$state_probs =~ s/[\t\s]+$//;
+			my @split_state_probs = split /\t+/ , $state_probs;$predicted_state{$species} = "A";
+			foreach my $state(@split_state_probs)
+				{
+				if($state =~ /^([A-Z])\:([0-9\.]+)/)
+					{
+					my $st = $1; my $pr = $2; $state_probabilities_for_pie{$species}{$st} = $pr;$internalnode_state_predictions++; # print "\t$s,$p\n"
+					};
+				};			
+			};
+		};
+	close IN_TRAIT_B;
+print "internalnode_state_predictions:$internalnode_state_predictions\n";
+
+	#####################################################################
+	};# if($arguments =~ /-piechart_trait_prob\s+(\S+)\s+(\S+)/)
+# $known_state{$sp}; $predicted_state{$sp} = "A"; $state_probabilities_for_pie{$sp}{$pr} = $p;
+##############################################################################################################################
+
+
+
+
+
+
+
 
 
 if($arguments =~ /-remove_polytomies/)
@@ -2468,7 +3175,192 @@ if($arguments =~ /-label_tips\s+(\S+)\s+(\S+)/)
 	};
 
 
+if($arguments =~ /-audify/)
+	{
+	$plot_trees_with_branchlengths = 1;
+	$plot_tree	= 1;
+	$audify_tree =1;
+	};
 
+
+######################################################################################################
+
+if($arguments =~ /-controlfile\s+(\S+)/)
+	{
+	$plot_variables_controlfile = $1;
+	open(CNTRL, $plot_variables_controlfile) || die "\nerror 2923, $plot_variables_controlfile\n";
+	print "\nuser has supplied controlfile containing plotting variables...\n";
+
+	while (my $line = <CNTRL>)
+		{
+	#	print $line;
+		$line =~ s/\n//;$line =~ s/\r//; $line =~ s/\s+\#.+//;
+
+		if($line =~ /^scale_branchlengths\s*\=\s*(\d)/) # scale_branchlengths = 2
+			{
+			$scale_branchlengths = $1
+			}elsif($line =~ /^scale_bl_value\s*\=\s*(\S+)/) # scale_bl_value = 0.001
+			{
+			$scale_bl_value = $1;
+			}elsif($line =~ /^plot_X_left\s*\=\s*(\S+)/) # plot_X_left = 0.6
+			{
+			$plot_X_left = $1;
+			}elsif($line =~ /^plot_X_right\s*\=\s*(\S+)/) # plot_X_right = 1.20
+			{
+			$plot_X_right = $1;
+			}elsif($line =~ /^plot_Y_lower\s*\=\s*(\S+)/) # plot_Y_lower = -0.9
+			{
+			$plot_Y_lower = $1;
+			}elsif($line =~ /^plot_Y_upper\s*\=\s*(\S+)/) # plot_Y_upper = 0.40
+			{
+			$plot_Y_upper = $1;
+			}elsif($line =~ /^print_tips_circular_tree\s*\=\s*(\S+)/) # terminal label
+			{
+			$print_tips_circular_tree = $1;
+			}elsif($line =~ /^tip_tax_label_cex\s*\=\s*(\S+)/) # tip_tax_label_cex = 0.3
+			{
+			$tip_tax_label_cex = $1;
+			}elsif($line =~ /^known_states_point_type\s*\=\s*(\S+)/) # known_states_point_type = 2
+			{
+			$known_states_point_type = $1;
+			}elsif($line =~ /^triangle_cex1\s*\=\s*(\S+)/) # triangle_cex1 = 1.2
+			{
+			$triangle_cex1 = $1;
+			}elsif($line =~ /^triangle_cex2\s*\=\s*(\S+)/) # triangle_cex2 = 1.0
+			{
+			$triangle_cex2 = $1;
+			}elsif($line =~ /^pie_radius\s*\=\s*(\S+)/) # pie_radius = 0.00090
+			{
+			$pie_radius = $1;
+			}elsif($line =~ /^pie_radius_border\s*\=\s*(\S+)/) # pie_radius_border = 0.000905
+			{
+			$pie_radius_border = $1;
+			}elsif($line =~ /^plot_tip_label_offset\s*\=\s*(\S+)/) # default 0.0006, terminal X offset
+			{
+			$plot_tip_label_offset = $1;
+			}elsif($line =~ /^ref_tree_internal_label_cexB\s*\=\s*(\S+)/) # 
+			{
+			$ref_tree_internal_label_cexB = $1;
+			}elsif($line =~ /^remove_node_support_from_input_tree\s*\=\s*(\S+)/) #
+			{
+			$remove_node_support_from_input_tree = $1;
+			}elsif($line =~ /^plot_root_node_branchlength\s*\=\s*(\S+)/) #
+			{
+			$plot_root_node_branchlength = $1;
+			}elsif($line =~ /^multipleier\s*\=\s*(\S+)/) #
+			{
+			$multipleier = $1;
+			}elsif($line =~ /^clock_adjust\s*\=\s*(\S+)/) #		
+			{
+			$clock_adjust = $1;
+			}elsif($line =~ /^notch_size\s*\=\s*(\S+)/) #	
+			{
+			$notch_size = $1;
+			}elsif($line =~ /^attach_higher_taxname_to_tip_label\s*\=\s*(\S+)/) #
+			{
+			$attach_higher_taxname_to_tip_label = $1;
+			}elsif($line =~ /^highlight_tips_from_file\s*\=\s*(\S+)/) #
+			{
+			$highlight_tips_from_file = $1;
+			}elsif($line =~ /^highlight_file\s*\=\s*(\S+)/) #
+			{
+			$highlight_file = $1;
+			}elsif($line =~ /^highlight_tips_type\s*\=\s*(\S+)/) #
+			{
+			$highlight_tips_type  = $1;
+			}elsif($line =~ /^reference_tip_label_x\s*\=\s*(\S+)/) # = 0.87;
+			{
+			$reference_tip_label_x  = $1;
+			}elsif($line =~ /^summary_tax_label_cex\s*\=\s*(\S+)/) # tax summary printed out from and seperate to terminal labels
+			{
+			$summary_tax_label_cex = $1;
+			}elsif($line =~ /^width\s*\=\s*(\S+)/) #
+			{
+			$width = $1;
+			}elsif($line =~ /^read_sourcetrees\s*\=\s*(\S+)/) #
+			{
+			$read_sourcetrees = $1;
+			}elsif($line =~ /^sourcetrees_path\s*\=\s*(\S+)/) #
+			{
+			$sourcetrees_path = $1;
+			}elsif($line =~ /^sourcetrees_list\s*\=\s*(\S.+)/) #
+			{
+			$sourcetrees_list = $1;
+			}elsif($line =~ /^print_internal_node_labels_on_tree\s*\=\s*(\S+)/) # 1==inferred, 2==native node labels
+			{
+			$print_internal_node_labels_on_tree = $1;
+			}elsif($line =~ /^rectangular_tree_internal_label_cex\s*\=\s*(\S+)/) #
+			{
+			$rectangular_tree_internal_label_cex  = $1;
+			}elsif($line =~ /^metacoder_node_points\s*\=\s*(\S+)/) # 3== scale branch widths but no points
+			{
+			$metacoder_node_points  = $1;
+			}elsif($line =~ /^text_shadow_offset\s*\=\s*(\S+)/) # = 0.000015;
+			{
+			$text_shadow_offset  = $1;
+			}elsif($line =~ /^default_node_color\s*\=\s*(\S+)/) # 
+			{
+			$default_node_color  = $1;
+			}elsif($line =~ /^metacoder_branch_thickness_scale_factor\s*\=\s*(\S+)/) #
+			{
+			$metacoder_branch_thickness_scale_factor  = $1;
+			}elsif($line =~ /^metacoder_style_node_limit\s*\=\s*(\S+)/) # = 100;
+			{
+			$metacoder_style_node_limit = $1;
+			}elsif($line =~ /^graft_point_col\s*\=\s*(\S+)/) # = "red";
+			{
+			$graft_point_col = $1
+			}elsif($line =~ /^graft_point_cex\s*\=\s*(\S+)/) # = 2.0; # default 2
+			{
+			$graft_point_cex = $1
+			}elsif($line =~ /^graft_point_border_cex\s*\=\s*(\S+)/) # = 2.6;
+			{
+			$graft_point_border_cex = $1
+			}elsif($line =~ /^graft_tax_label_cex\s*\=\s*(\S+)/) #= 4.0; # default 1.62
+			{
+			$graft_tax_label_cex = $1
+			}elsif($line =~ /^simplify_graft_labels\s*\=\s*(\S+)/) #  = 1; # if ==1, trim off tree filename
+			{
+			$simplify_graft_labels = $1
+			}elsif($line =~ /^graft_label_width\s*\=\s*(\S+)/) # = 0.07
+			{
+			$graft_label_width = $1
+			}elsif($line =~ /^graft_branchlength1\s*\=\s*(\S+)/) # = 0.0025
+			{
+			$graft_branchlength1 = $1
+			}elsif($line =~ /^graft_branchlength2\s*\=\s*(\S+)/) # = 0.00030
+			{
+			$graft_branchlength2 = $1
+			}elsif($line =~ /^internal_label_justify\s*\=\s*(\S+)/) # = 0; # adj=0 means left justify, 0.5 would be middle
+			{
+			$internal_label_justify = $1
+			}elsif($line =~ /^internal_label_decendent_plot_limit\s*\=\s*(\S+)/) # default 500
+			{
+			$internal_label_decendent_plot_limit = $1;
+			}elsif($line =~ /^internal_label_plot_string\s*\=\s*(\S+)/) # plot internal label if it matches this string
+			{
+			$internal_label_plot_string = $1;
+			}elsif($line =~ /^plot_coverage_only_for_none\s*\=\s*(\S+)/) 	# metacoder style node points for coverage, 
+ 			{								# 1) only plot for absent taxa 2) coverage < 2 percent
+			$plot_coverage_only_for_none = $1;
+			}elsif($line =~ /write_taxa_to_internal_nodes\s*\=\s*1/)
+			{
+			$write_taxa_to_internal_nodes = 1; 	# read users input tree, infer taxa of internal nodes according to decendents, 
+								# write new newick string with these as labels. no tree plotting.
+			}elsif($line =~ /collapse_terminus_adjacent\s*\=\s*(\S+)/)
+			{
+			$collapse_terminus_adjacent=$1;	# default=0;
+			};
+
+
+		};
+	close CNTRL;
+
+
+	}else{
+	};
+
+######################################################################################################
 
 
 
@@ -2492,7 +3384,7 @@ print "\n";
 
 sub assign_names_to_internal_nodes
 {
-my $current_node = $_[0];my $from_parent = $_[1];
+my $current_node = $_[0];my $from_parent = $_[1];my $dist_from_root = $_[2];
 my $count_connections = $child_counts{$current_node};
 $count_sub_calls++;
 
@@ -2506,7 +3398,10 @@ my %check_duplication = ();
 for my $all_connections(0 .. $count_connections)
 	{
 	my $connecting_node = $nodes{$current_node}{$all_connections};
-	if(exists($check_duplication{$connecting_node})){die "\nduplcaution error:$connecting_node\n"};
+	if(exists($check_duplication{$connecting_node}))
+		{
+		 die "\nduplication error 2:$connecting_node\n"
+		};
 	$check_duplication{$connecting_node} = 1;
 
 	if($from_parent eq "New_Root")
@@ -2523,12 +3418,16 @@ for my $all_connections(0 .. $count_connections)
 if($current_node =~ /INTERNAL_NODE/)
 	{
 	$terminals_belonging_to_current_node = "";
+	$list_taxonomic_species_also_in_sourcetree  = "";
 	$terminals_belonging_to_current_node_which_have_tax_info = "";
 	$max_steps_to_tip = 0;
+	$node_labels_within_clade=0; # $native_node_labels{$nodeID}
 
 	###############################################################
 	get_terminals_from_this_node($current_node , $from_parent , 0);#
 	###############################################################
+
+	if($node_labels_within_clade == 0){ $native_node_labels_within_clade{$current_node} = 0}else{$native_node_labels_within_clade{$current_node} = 1};
 
 	my $shared_tobycode = "";my $shared_rank = ""; my $shared_lineage = ""; my $sub_results;
 	# particularly with OTUs in the data, there will be cases where a node has lots of terminals,
@@ -2555,6 +3454,11 @@ if($current_node =~ /INTERNAL_NODE/)
 	$terminals_belonging_to_current_node =~ s/^\t+//;$terminals_belonging_to_current_node =~ s/\t+$//;
 	my @count_terms_array = split /\t/ , $terminals_belonging_to_current_node;
 	my $count_termnials = scalar @count_terms_array;
+
+	$list_taxonomic_species_also_in_sourcetree =~ s/(\t)\t+/$1/;
+	$list_taxonomic_species_also_in_sourcetree =~ s/^\t+//;$list_taxonomic_species_also_in_sourcetree =~ s/\t+$//;
+	my @count_coverage_array = split /\t/ , $list_taxonomic_species_also_in_sourcetree;
+	my $count_coverage = scalar @count_coverage_array;
 
 
 	if($identify_nodes_via_decendents == 1)
@@ -2588,18 +3492,24 @@ if($current_node =~ /INTERNAL_NODE/)
 				};
 		};
 
-
+	my $terminals_string = join ' ' , @count_terms_array;
 	if($write_subtrees == 1)
 		{
-		$store_terminals_derived_from_this_node{$current_node} = join ' ' , @count_terms_array
+		$store_terminals_derived_from_this_node{$current_node} = $terminals_string;
 		};
 
+	if($bayestraits_AddTag ==1)
+		{
+		# AddTag TAG_16 Capicola_flavitarsis Dasypoda_hirtipes Dasypoda_argentata Dasypoda_suripes
+ 		print BAYESTRAITS_ADDTAG "AddTag $current_node $terminals_string\n";
+		push @bayestraits_tags, $current_node;
+		};
 
 	if($sub_results =~ /^([^\t]+)\t(.+)\t(.+)/){$shared_tobycode = $1; $shared_rank = $2; $shared_lineage = $3};
 	print LOG "$current_node\t$count_termnials\t$shared_tobycode\t$shared_lineage\n";
 
 
-	if($count_sub_calls =~ /000$/)
+	if($count_sub_calls =~ /0000$/)
 		{
 		print "\nsub assign_names called $count_sub_calls times\n\tassigning name to NODE($current_node),\n" , 
 		"\tfrom_parent:$from_parent	count_those_with_tax_info:$count_those_with_tax_info\n" , 
@@ -2624,6 +3534,9 @@ if($current_node =~ /INTERNAL_NODE/)
 	############	die "\nno tax name returned\n"
 		};
 
+	$intree_internal_ranktaxon{$current_node} = "$shared_rank$shared_tobycode";
+
+
 	my $assigned_name = $shared_tobycode;
 	my $increment =1;
 	while (exists($all_names_assigned{$assigned_name}))
@@ -2636,15 +3549,15 @@ if($current_node =~ /INTERNAL_NODE/)
 	$taxonomic_node_IDs_rank{$current_node} = $shared_rank;
 
 
-
 	$lineages_assigned_to_nodes{$current_node} = $shared_lineage;
 
-	$count_terminals_node_lable{$current_node} = $count_termnials;
+	$count_terminals_node_lable{$current_node} = $count_termnials;if($count_termnials >= $max_terminals ){$max_terminals = $count_termnials};
 	$nodes_to_tip_from_current{$current_node} = $max_steps_to_tip;
-
+	$count_coverage_node_lable{$current_node} = $count_coverage;
 
 	}else{
 	$nodes_to_tip_from_current{$current_node} = 0;
+	$native_node_labels_within_clade{$current_node} = 0;
 	}; # if($current_node =~ /INTERNAL_NODE/)
 
 
@@ -2685,7 +3598,11 @@ my %check_duplication = ();
 for my $all_connections(0 .. $count_connections)
 	{
 	my $connecting_node = $nodes{$current_node}{$all_connections};
-	if(exists($check_duplication{$connecting_node})){die "\nduplcaution error:$connecting_node\n"};
+	if(exists($check_duplication{$connecting_node}))
+		{
+		# NB %check_duplication is reset for each node
+		$duplication_errors++;  die "\nduplication error 3:$connecting_node\n"
+		};
 	$check_duplication{$connecting_node} = 1;
 
 	if($from_parent eq "New_Root")
@@ -2706,6 +3623,9 @@ for my $index(0 .. $#next1)
 
 	if($test =~ /^INTERNAL_NODE_/)
 		{
+
+	 	if( $native_node_labels{$test} =~ /\w/ ){$node_labels_within_clade=1};
+
 	#	unless(exists($collapse_nodes{$test}))	
 	#		{
 		#####################################
@@ -2721,6 +3641,8 @@ for my $index(0 .. $#next1)
 
 		# store all terminals:
 		$terminals_belonging_to_current_node .= "$test\t";
+
+		if($all_sourcetree_binomials{$test} == 1){$list_taxonomic_species_also_in_sourcetree .= "$test\t"};
 
 		# store only terminal with tax info:
 		my $test_species = $test;$test_species =~ s/^([A-Z][a-z]+)_.+/$1/;
@@ -2983,6 +3905,7 @@ my $assign_new_x = $_[6]; my $assign_new_y = $_[7];
 my $abreviate_nodeID = $_[8];my $internal_taxname = $_[9];my $node_colour = $_[10];
 my $cartoonize_clade  = $_[11]; my $min_distance_to_tip_for_subtree  = $_[12];
 my $max_distance_to_tip_for_subtree  = $_[13]; my $combined_node_label =  $_[14];my $count_terminalsfromnode =  $_[15];
+my $internal_node_support =  $_[16]; # any node label (not just support)
 
 unless($count_terminalsfromnode =~ /\d/){die "\nerror 2986\n"};
 
@@ -2992,8 +3915,17 @@ unless($count_terminalsfromnode =~ /\d/){die "\nerror 2986\n"};
 
 # note $count_terminals only takes one value, count of all terminals in the backbone made earlier
 
-my $y1_proportion = ($node_plot_y / $count_terminals)+1;	$y1_proportion *= $multipleier;
+# plotting y is by number of terminals (taking values + 60000 to - 60000), 
+#	which is converted to proportion, then * multipleier
+
+
+my $y1_proportion = ($node_plot_y / $count_terminals)+1;	my $y1_proportion_start = $y1_proportion; $y1_proportion *= $multipleier;
 my $y2_proportion = ($assign_new_y / $count_terminals)+1;	$y2_proportion *= $multipleier;
+
+
+$y1_proportion -= $clock_adjust;$y2_proportion -= $clock_adjust;
+
+$screenprint7++;if($screenprint7 =~ /0000$/){print "\ty1_proportion:$y1_proportion_start multiplied:$y1_proportion\n"};
 
 # note $y2_proportion is ordered along y axis differently than output by .process_newick
 
@@ -3015,7 +3947,7 @@ my $width3 = $width;
 
 
 
-if($scale_branch_thickness == 1)
+if($scale_branch_thickness == 1) # default 0
 	{
 	$width3 = $width / ( $assign_new_x * $branch_root_to_tip_thickness_scale_factor);
 	};
@@ -3040,24 +3972,19 @@ if($cartoonize_clade =~ /[12]/)
 
 if($sonify == 1)
 	{
-
 	# probably best thing to record would be:
 	#	for each node, x position of bifurcation, y positions of each child branch.
 	# 	also child branch length, maybe just the shortest one.
 	#	store according to node id.
 	# 	sort according to y, omit nodes at exactly the same y.
-	
 
 #	$sonify_commands{$sum_branchlength  . "__"  .  $y1_proportion} = 1;
 #	$sonify_commands{$sum_branchlength  . "__"  .  $y2_proportion} = 1;
 #	$sonify_commands{$assign_new_x  . "__"  .  $y2_proportion} = 1;
-
 	$sonify_node_x{$current_node} = $sum_branchlength;# print "sonify node x:$sum_branchlength\n";
 	$sonify_node_y{$current_node} = $y1_proportion;
-
 	unless($sonify_child_nodes{$current_node} =~ /\t$test\t/){$sonify_child_nodes{$current_node} .= "	$test	"};
 	$sonify_child_xy{$current_node}{$test} = "$assign_new_x\t$y2_proportion";
-
 	};# if($sonify == 1)
 
 
@@ -3073,7 +4000,13 @@ $draw_tree_R_commands_RECTANGL .= $R_command;
  print VIDIFY "$branchnumber\t$sum_branchlength\t$y1_proportion\t$sum_branchlength\t$y2_proportion\t" , 
 			"$sum_branchlength\t$y1_proportion\t$sum_branchlength\t$y1_proportion\t$count_terminalsfromnode\n";
 $branchnumber++;
-# print VIDIFY2 "$branchnumber\t$sum_branchlength\t$y1_proportion\t$sum_branchlength\t$y1_proportion\n";$branchnumber++;
+
+########################################################
+
+# 20240812: regular VIDIFY doesnt have required info on single line as these are split into 2 branches,
+#	here give parent node location and child node location on single line.
+print VIDIFY2 "$branchnumber\t$sum_branchlength\t$y1_proportion\t$assign_new_x\t$y2_proportion\t$count_terminalsfromnode\n";
+
 ########################################################
 
 
@@ -3126,11 +4059,12 @@ if($cartoonize_clade == 1)
 
 if($test =~ /^INTERNAL_NODE_/)
 	{
-	if($node_support{$test} >= 0.75)
+	if( $node_support{$test} >= 0.75)
 		{
-		my $R_command = "points($assign_new_x,$y2_proportion,col=\"green\", pch=16, cex = $rectangular_plot_support_circle_size)\n";
-		$draw_tree_R_commands_RECTANGL2 .= $R_command; 
+	#	my $R_command = "points($assign_new_x,$y2_proportion,col=\"green\", pch=16, cex = $rectangular_plot_support_circle_size)\n";
+	#	$draw_tree_R_commands_RECTANGL2 .= $R_command; 
 		};
+
 
 	if($combine_node_labels == 1)
 		{
@@ -3252,12 +4186,58 @@ $lower = ($lower / $count_terminals)+1; $lower *= $multipleier;
 
 	};#if($branch_plot_type == 1)# single line branches:
 
+my $printing_metacoder_style_node =0;my $branch_color_command = "";
+# $metacoder_branch_thickness_scale_factor = 200;
+my $PA_color = "gray";
 
 
 if($branch_plot_type == 2) # nice lines ... 
 	{
 	my $current_loop_draw_tree_R_commands = "";
 
+
+	if($test =~ /^INTERNAL_NODE_/ && $metacoder_node_points =~ /[1234]/) # Scale branch thickness
+			{
+			my $nodesize_proportion;
+			# rank_decendent_counts_for_internalnode
+			if($metacoder_node_points == 1)
+				{
+				$nodesize_proportion =  ($count_terminals_node_lable{$test} / $max_terminals)*$metacoder_branch_thickness_scale_factor;
+				}elsif($metacoder_node_points =~ /[234]/)
+				{
+				$nodesize_proportion =  ($rank_decendent_counts_for_internalnode{$test} / $max_rank_decendent_counts)*$metacoder_branch_thickness_scale_factor;
+
+				# this one is for color not width:
+				my $nodesize_proportion2 = ($rank_decendent_counts_for_internalnode{$test} / $max_rank_decendent_counts);
+
+				#####################################################
+				# metacoder style branch coloring
+				my $taxon_phylogenetic_coverage;my $total_sp_for_taxon;my $coverage_proportion;
+				if($count_coverage_node_lable{$test} =~ /\d/) # value is scalar of terminal list, count_terminals_node_lable same.
+					{$taxon_phylogenetic_coverage = $count_coverage_node_lable{$test}}else{$taxon_phylogenetic_coverage = 0};
+				if($count_terminals_node_lable{$test} =~ /\d/)
+					{
+					$total_sp_for_taxon = $count_terminals_node_lable{$test};
+					$coverage_proportion = $taxon_phylogenetic_coverage/$total_sp_for_taxon;
+					};
+				if($nodesize_proportion2 =~ /\.\d/ && 
+					$count_terminals_node_lable{$test} =~ /\d/ && $count_terminals_node_lable{$test} >= $metacoder_style_node_limit)
+					{
+					$branch_color_command = "colors2<- rgb(colorfunc($coverage_proportion) , maxColorValue=255)"; 
+					$store_node_colors{$test} = $branch_color_command;
+					};
+				#####################################################
+
+
+				};
+			$width3 = $width*$nodesize_proportion
+
+
+			}else{
+			$width3 = $width
+			};
+		
+		
 
 	#	if(($y1_proportion+$notch_size) >= $y2_proportion )
 	#		{
@@ -3269,17 +4249,42 @@ if($branch_plot_type == 2) # nice lines ...
 	
 		#	}else{
 
-			if($y1_proportion < $y2_proportion)
-			{
+			if($y1_proportion < $y2_proportion) # y1 is parent node, y2 is end of first part of branch of child node.
+			{				# if y1<y2 then current child branch is higher than parent
+
 			my $old_part = $y1_proportion; my $new_part = $y1_proportion+$notch_size;
+			#print "\ny1_proportion:$y1_proportion y2_proportion:$y2_proportion new_part:$new_part\n";
+
+
+			if($new_part > $y2_proportion) # this is a tiny branch, draw single strait line
+				{
+
+
+				my $SEG_XS = $sum_branchlength * cos($old_part);my $SEG_YS = $sum_branchlength * sin($old_part);
+				my $SEG_XE = $sum_branchlength * cos($y2_proportion);my $SEG_YE = $sum_branchlength * sin($y2_proportion);
+				my $R_command = "";
+				if($branch_color_command =~ /\w/)
+					{$R_command =  "$branch_color_command;segments(" . "$SEG_XS, $SEG_YS , $SEG_XE, $SEG_YE , col = colors2, lwd = $width3)\n";
+					}else{$R_command =  "segments(" . "$SEG_XS, $SEG_YS , $SEG_XE, $SEG_YE , col = \"$node_colour\", lwd = $width3)\n";
+					};
+				$current_loop_draw_tree_R_commands .= $R_command;
+
+
+				}else{
+			
 			while($new_part <= $y2_proportion)
 				{
 				# Y lower for curent segment = $old_part; Y upper is $new_part	
 				my $SEG_XS = $sum_branchlength * cos($old_part);my $SEG_YS = $sum_branchlength * sin($old_part);
 				my $SEG_XE = $sum_branchlength * cos($new_part);my $SEG_YE = $sum_branchlength * sin($new_part);
-#
-				my $R_command =  "segments(" . "$SEG_XS, $SEG_YS , $SEG_XE, $SEG_YE , col = \"$node_colour\", lwd = $width3)\n";
+				my $R_command = "";
 
+				if($branch_color_command =~ /\w/)
+					{
+					$R_command =  "$branch_color_command;segments(" . "$SEG_XS, $SEG_YS , $SEG_XE, $SEG_YE , col = colors2, lwd = $width3)\n";
+					}else{
+					$R_command =  "segments(" . "$SEG_XS, $SEG_YS , $SEG_XE, $SEG_YE , col = \"$node_colour\", lwd = $width3)\n";
+					};
 				# $draw_tree_R_commands .= $R_command;
 				$current_loop_draw_tree_R_commands .= $R_command;
 
@@ -3289,21 +4294,56 @@ if($branch_plot_type == 2) # nice lines ...
 					# remaining segment before break loop
 					my $SEG_XS = $sum_branchlength * cos($old_part);my $SEG_YS = $sum_branchlength * sin($old_part);
 					my $SEG_XE = $sum_branchlength * cos($y2_proportion);my $SEG_YE = $sum_branchlength * sin($y2_proportion);
-					my $R_command =  "segments(" . "$SEG_XS, $SEG_YS , $SEG_XE, $SEG_YE , col = \"$node_colour\", lwd = $width3)\n";
+					my $R_command = "";
+					if($branch_color_command =~ /\w/)
+						{
+						$R_command =  "$branch_color_command;segments(" . "$SEG_XS, $SEG_YS , $SEG_XE, $SEG_YE , col = colors2, lwd = $width3)\n";
+						}else{
+						$R_command =  "segments(" . "$SEG_XS, $SEG_YS , $SEG_XE, $SEG_YE , col = \"$node_colour\", lwd = $width3)\n";
+						};
 					# $draw_tree_R_commands .= $R_command;
 					$current_loop_draw_tree_R_commands .= $R_command;
 
 					};
-				}
-			}else{
+				#print "\tnew_part:$new_part\n";
+				};
+				};
+
+
+			}else{ # if($y1_proportion < $y2_proportion)
 			my $old_part = $y2_proportion; my $new_part = $y2_proportion+$notch_size;
+
+			if($new_part > $y1_proportion) # tiny branch , draw single strait line
+				{
+
+				my $SEG_XS = $sum_branchlength * cos($old_part);my $SEG_YS = $sum_branchlength * sin($old_part);
+				my $SEG_XE = $sum_branchlength * cos($y1_proportion);my $SEG_YE = $sum_branchlength * sin($y1_proportion);
+				my $R_command =  "";
+				if($branch_color_command =~ /\w/)
+					{
+					$R_command = "$branch_color_command;segments(" . "$SEG_XS, $SEG_YS , $SEG_XE, $SEG_YE , col = colors2, lwd = $width3)\n";
+					}else{	
+					$R_command = "segments(" . "$SEG_XS, $SEG_YS , $SEG_XE, $SEG_YE , col = \"$node_colour\", lwd = $width3)\n";
+					};
+				$current_loop_draw_tree_R_commands .= $R_command;
+
+
+				}else{
+
+
 			while($new_part <= $y1_proportion)
 				{
 				# Y lower for curent segment = $old_part; Y upper is $new_part	
 				my $SEG_XS = $sum_branchlength * cos($old_part);my $SEG_YS = $sum_branchlength * sin($old_part);
 				my $SEG_XE = $sum_branchlength * cos($new_part);my $SEG_YE = $sum_branchlength * sin($new_part);
 #
-				my $R_command =  "segments(" . "$SEG_XS, $SEG_YS , $SEG_XE, $SEG_YE , col = \"$node_colour\", lwd = $width3)\n";
+				my $R_command =  "";
+				if($branch_color_command =~ /\w/)
+					{
+					$R_command = "$branch_color_command;segments(" . "$SEG_XS, $SEG_YS , $SEG_XE, $SEG_YE , col = colors2, lwd = $width3)\n";
+					}else{			
+					$R_command = "segments(" . "$SEG_XS, $SEG_YS , $SEG_XE, $SEG_YE , col = \"$node_colour\", lwd = $width3)\n";
+					};
 				# $draw_tree_R_commands .= $R_command;
 				$current_loop_draw_tree_R_commands .= $R_command;
 
@@ -3313,12 +4353,20 @@ if($branch_plot_type == 2) # nice lines ...
 					# remaining segment before break loop
 					my $SEG_XS = $sum_branchlength * cos($old_part);my $SEG_YS = $sum_branchlength * sin($old_part);
 					my $SEG_XE = $sum_branchlength * cos($y1_proportion);my $SEG_YE = $sum_branchlength * sin($y1_proportion);
-					my $R_command =  "segments(" . "$SEG_XS, $SEG_YS , $SEG_XE, $SEG_YE , col = \"$node_colour\", lwd = $width3)\n";
+					my $R_command =  "";
+					if($branch_color_command =~ /\w/)
+						{
+						$R_command = "$branch_color_command;segments(" . "$SEG_XS, $SEG_YS , $SEG_XE, $SEG_YE , col = colors2, lwd = $width3)\n";
+
+						}else{	
+						$R_command = "segments(" . "$SEG_XS, $SEG_YS , $SEG_XE, $SEG_YE , col = \"$node_colour\", lwd = $width3)\n";
+						};
 					# $draw_tree_R_commands .= $R_command;
 					$current_loop_draw_tree_R_commands .= $R_command;
 
 					};
 				}
+				};
 			
 			}
 
@@ -3332,9 +4380,84 @@ if($branch_plot_type == 2) # nice lines ...
 	# end position.
 	my $Xend 	= $assign_new_x * cos($y2_proportion);# X
 	my $Yend 	= $assign_new_x * sin($y2_proportion);# Y
-	my $R_command =  "segments(" . "$Xstart, $Ystart , $Xend, $Yend , col = \"$node_colour\", lwd = $width3)\n";
-	# $draw_tree_R_commands .= $R_command;
-	$current_loop_draw_tree_R_commands .= $R_command;
+
+# 
+
+	my $temp_branch_color = $node_colour;
+	if( $metacoder_node_points =~ /[1234]/)
+		{
+		unless($test =~ /^INTERNAL_NODE_/)
+			{
+			# is current terminal ID found amongst set of sourcetrees
+			if($all_sourcetree_binomials{$test} == 1){$temp_branch_color = "red"}
+			}; 
+		};
+
+	my $R_command =	"";
+	if($branch_color_command =~ /\w/)
+		{
+		$R_command =  "$branch_color_command;segments(" . "$Xstart, $Ystart , $Xend, $Yend , col = colors2, lwd = $width3)\n";
+		}else{
+		$R_command =  "segments(" . "$Xstart, $Ystart , $Xend, $Yend , col = \"$temp_branch_color\", lwd = $width3)\n";
+		};
+	# prev command is added to file shortly
+
+	#########################################################	
+	# HERE draw 'horizotal' of circular tree
+	# 20220823: $graftify_branch
+
+	if($graftify_branch == 1)
+		{
+		my $Xstart2 	= $Xstart 	+ (($Xend - $Xstart)*0.1);	my $Ystart2 	= $Ystart 	+ (($Yend - $Ystart)*0.1);
+		my $Xend2 	= $Xend 	- (($Xend - $Xstart)*0.1);	my $Yend2 	= $Yend 	- (($Yend - $Ystart)*0.1);
+		my $XstartMID 	= $Xstart 	+ (($Xend - $Xstart)*0.5);	my $YstartMID 	= $Ystart 	+ (($Yend - $Ystart)*0.5);
+
+	#	my $R_command1a = "points($Xstart, $Ystart,col=\"$graft_point_col\", pch=16,cex=$graft_point_cex)\n";
+	#	my $R_command2a = "points($Xend, $Yend,col=\"$graft_point_col\", pch=16,cex=$graft_point_cex)\n";
+		my $R_command1b = "points($Xstart2, $Ystart2,col=\"black\", pch=16,cex=$graft_point_border_cex)\n";
+		my $R_command1bb = "points($Xstart2, $Ystart2,col=\"$graft_point_col\", pch=16,cex=$graft_point_cex)\n";
+		my $R_command2b = "points($Xend2, $Yend2,col=\"black\", pch=16,cex=$graft_point_border_cex)\n";
+		my $R_command2bb = "points($Xend2, $Yend2,col=\"$graft_point_col\", pch=16,cex=$graft_point_cex)\n";
+		my $R_command3a =  "segments(" . "$Xstart, $Ystart , $Xstart2, $Ystart2 , col = \"$node_colour\", lwd = $width3)\n";
+		my $R_command3b =  "segments(" . "$Xend, $Yend , $Xend2, $Yend2 , col = \"$node_colour\", lwd = $width3)\n";
+		my $R_command4;
+		if($native_node_labels{$test} =~ /\w/)
+			{
+			my $graft_tax_label = $native_node_labels{$test};
+			if($simplify_graft_labels ==1){	$graft_tax_label =~ s/^([a-z]+)([A-Z][a-z\_]+)\..+/$1 $2/};
+
+
+			my $textangle = atan2 ( $YstartMID,$XstartMID  ) * (180 / 3.142) ;
+			my $pinttextangle = $textangle;
+			if($textangle > 90){$pinttextangle = $textangle - 180};
+			if($textangle < -90){$pinttextangle = $textangle + 180};
+
+		#	$R_command4 = "text($XstartMID, $YstartMID, col = \"black\", " . "labels=\"$graft_tax_label\",cex=$graft_tax_label_cex,srt=$pinttextangle , font=1)\n";# REG
+
+
+			###########################################
+			# need to print with white background so black text can be seen when against black branches
+			# this sub writes commands to object $draw_tree_R_commands3
+			# print_shadow( X, Y, LABEL , CEX );
+			print_shadow($XstartMID, $YstartMID , $graft_tax_label , $graft_tax_label_cex , $pinttextangle);
+			###########################################
+
+
+			}else{
+			print "\nwarning: no node label found for graftify node ($test)\n";die "";
+			};
+
+#		my $R_command2 = "points($Xend, $Yend,col=\"$graft_point_col\", pch=16,cex=$graft_point_cex)\n";
+
+		$current_loop_draw_tree_R_commands .= "$R_command3a$R_command3b$R_command1b$R_command1bb$R_command2b$R_command2bb$R_command4";
+		}else{
+		$current_loop_draw_tree_R_commands .= $R_command; # this is the command for radial branches
+		};
+
+	#########################################################	
+
+
+
 
 	my $assign_new_x_offset = $assign_new_x + $plot_tip_label_offset;
 	my $Xend_offset = $assign_new_x_offset * cos($y2_proportion);# labels are not right at tip, but a bit further out.
@@ -3343,12 +4466,137 @@ if($branch_plot_type == 2) # nice lines ...
 
 
 
-
 	# the following bit, hack some visual representation of values which are on terminal labels
 	# in this case, i have the temperature appended. 
 
-	unless($test =~ /^INTERNAL_NODE_/)
+	if($test =~ /^INTERNAL_NODE_/)
 		{
+
+		##########################################################################################################
+
+		# internal pie charts
+		my $plot_pie_at_tip = 0; if($known_state{$test} =~ /\w/ || $predicted_state{$test} =~ /\w/){$plot_pie_at_tip = 1}; 
+		if($piechart_probs_internalnodes == 1 && $plot_pie_at_tip == 1)
+			{# 20220223, pie charts at internal nodes to depict trait probabilities
+
+		#	print "ploting pie chart for node $test\n";
+			# only one state, just draw a circle. also with black boarder to signify prior known,
+			if($known_state{$test} =~ /\w/)
+				{
+				my $trait_state = $known_state{$test};my $plotcolor = $trait_state_colors{$trait_state};
+				unless($plotcolor =~ /\w/){die "\nerror 3856. failed to retrive color for state $trait_state\n"};
+
+				if($known_states_point_type == 1) # 1 = circle, 
+					{
+					my $R_command = "draw.circle($Xend, $Yend,$pie_radius_border,border=NULL,col=\"black\",lty=1, lwd=1); " . 
+						"draw.circle($Xend, $Yend,$pie_radius,border=NULL,col=\"$plotcolor\",lty=1, lwd=1)\n"; # nv=100,
+					$draw_tree_R_commands4 .= $R_command;
+					}elsif($known_states_point_type == 2) # 2 == triangle (pch=17)
+					{
+					my $R_command = "points($Xend, $Yend, col = \"black\", pch=17, cex=$triangle_cex1)\n" .
+							"points($Xend, $Yend, col = \"$plotcolor\", pch=17, cex=$triangle_cex2)\n";
+					$draw_tree_R_commands4b .= $R_command;
+					};
+				$draw_tree_R_commands4 .= $R_command;
+				};
+			
+			# multiple states, draw pie chart
+			if($predicted_state{$test} =~ /\w/)
+				{
+				my @color_array;my @prob_array;
+				for my $state(@all_states_for_pie_array)
+					{
+					my $color = $trait_state_colors{$state};
+					my $prob = 0; if($state_probabilities_for_pie{$test}{$state} =~ /\d/){$prob = $state_probabilities_for_pie{$test}{$state}};
+					push @color_array, $color; push @prob_array, $prob;
+					};
+				my $colorstring = join '","' , @color_array;
+				my $statesstring = join '","' , @all_states_for_pie_array;
+				my $probsstring = join ',' , @prob_array;
+				my $R_command = "draw.circle($Xend, $Yend,$pie_radius_border,border=NULL,col=\"black\",lty=1, lwd=0.1); " . # border
+					"states <- c(\"" . $statesstring . "\");probs <- c("  . $probsstring . ");trait_cols <- c(\"" . $colorstring . "\"); " .
+ 					"t9 <- matrix (NA, nrow=length(states), ncol = 4);t9[ , 1] <- $Xend;t9[ , 2] <- $Yend;t9[ , 3] <- states;t9[ , 4] <- probs;" . 
+ 					" xyz <- make.xyz(as.numeric(t9[ , 1]),as.numeric(t9[ , 2]),as.numeric(t9[,4]),t9[,3]);" . 
+ 					" draw.pie(xyz\$x, xyz\$y, xyz\$z, radius = $pie_radius, col=trait_cols) # $test\n";
+
+				$draw_tree_R_commands4c .= $R_command;# predicted tips contain more information, need plotting over tips of known states
+
+				};
+			
+			};# if plotting states at tips
+
+		# circle at nodes, size proportional to number of decendents.
+		if($metacoder_node_points =~ /[1234]/)
+			{
+			my $circle_nodesize_proportion =  ($count_terminals_node_lable{$test} / $max_terminals)*40;
+			if($circle_nodesize_proportion > 20){$circle_nodesize_proportion = 20};if($circle_nodesize_proportion < 5){$circle_nodesize_proportion = 5};
+			my $R_command = "points($Xend, $Yend, col = \"black\", pch=16, cex=$circle_nodesize_proportion)\n";
+#			$draw_tree_R_commands4c .= $R_command;
+
+			# 20230905: pie chart indicating coverage
+			my $taxon_phylogenetic_coverage;
+			if($count_coverage_node_lable{$test} =~ /\d/) # value is scalar of terminal list, count_terminals_node_lable same.
+				{$taxon_phylogenetic_coverage = $count_coverage_node_lable{$test}}else{$taxon_phylogenetic_coverage = 0};
+
+			if($count_terminals_node_lable{$test} =~ /\d/ && $count_terminals_node_lable{$test} >= $metacoder_style_node_limit)
+				{
+				my $total_sp_for_taxon = $count_terminals_node_lable{$test};
+				my $coverage_proportion = $taxon_phylogenetic_coverage/$total_sp_for_taxon;
+				my $probsstring = $coverage_proportion . "," . ( 1 - $coverage_proportion ); # print "coverage probsstring:$probsstring\n";
+				my $colorstring = "red\",\"gray";
+
+				if($metacoder_node_points =~ /[123]/)
+					{
+					# NOTE: seems states need to be alphabetically ordered, or they may reorder
+					my $R_command = "draw.circle($Xend, $Yend,$pie_radius_border,border=NULL,col=\"black\",lty=1, lwd=0.1); " . # border
+					"states <- c(\"A\",\"B\");probs <- c("  . $probsstring . ");trait_cols <- c(\"" . $colorstring . "\"); " .
+ 						"t9 <- matrix (NA, nrow=length(states), ncol = 4);t9[ , 1] <- $Xend;t9[ , 2] <- $Yend;t9[ , 3] <- states;t9[ , 4] <- probs;" . 
+ 						" xyz <- make.xyz(as.numeric(t9[ , 1]),as.numeric(t9[ , 2]),as.numeric(t9[,4]),t9[,3]);" . 
+ 						" draw.pie(xyz\$x, xyz\$y, xyz\$z, radius = $pie_radius, col=trait_cols, border=F) # $test\n";
+						# , border=F means no black lines seperating pie slices
+
+						if($plot_coverage_only_for_none == 2)
+							{
+							# print "\ncoverage_proportion:$coverage_proportion\n";
+							if( $coverage_proportion < 0.02)
+								{		
+								$draw_tree_R_commands4c .= $R_command; $printing_metacoder_style_node =1;
+							#	 print "\tdraw pie for low sampled ($coverage_proportion) node $test\n";
+								};
+							}else{
+							$draw_tree_R_commands4c .= $R_command;$printing_metacoder_style_node =1;
+							};
+							
+
+					}elsif($metacoder_node_points =~ /[4]/)
+					{ # presence absense
+					 
+					my $R_command = "draw.circle($Xend, $Yend,$pie_radius_border,border=NULL,col=\"black\",lty=1, lwd=0.1); " . # border
+						"draw.circle($Xend, $Yend,$pie_radius,border=NULL,col=\"$PA_color\",lty=1, lwd=0.1);\n"; # point
+					if($taxon_phylogenetic_coverage >= 1){$PA_color = "red"}; # count for current node
+
+					if($plot_coverage_only_for_none == 1)
+						{
+						if($PA_color eq "gray"){$draw_tree_R_commands4c .= $R_command};
+						}else{
+						$draw_tree_R_commands4c .= $R_command;
+						};
+						
+					
+					$printing_metacoder_style_node =1;
+					};
+				};
+
+
+			};
+
+
+
+
+		#########################################################################################################
+
+
+		}else{
 	#	print "tip label :$test\n"; # Cachryphora_canadensis_temp5.8
 
 	my $Xstart2 	= $reference_tip_label_x * cos($y2_proportion);# X ax
@@ -3364,12 +4612,25 @@ if($branch_plot_type == 2) # nice lines ...
 	my $R_commandtip;
 
 
+	#	" # $node_plot_y,$y1_proportion_start,$y1_proportion,$y2_proportion\n"
+
+
+	my $print_terminal_label = $test;
+	if($attach_higher_taxname_to_tip_label == 1)
+		{
+		my $prestring = return_tax_string_for_this($test);
+		$print_terminal_label = $prestring . "_" . $test;
+		};
 
 	if($all_tip_labels_eqidistant == 1)
 		{
-		 $R_commandtip = "par(srt=0)\ntext($Xstart2, $Ystart2,srt=$pinttextangle , col = \"black\", " . "labels=\"$test\",cex=$tip_tax_label_cex, font=1)\n";# REG
-		}else{
-		 $R_commandtip = "par(srt=0)\ntext($Xend_offset, $Yend_offset,srt=$pinttextangle , col = \"black\", " . "labels=\"$test\",cex=$tip_tax_label_cex, font=1)\n";# REG
+		 $R_commandtip = "par(srt=0)\ntext($Xstart2, $Ystart2,srt=$pinttextangle , col = \"black\", " . 
+			"labels=\"$print_terminal_label\",cex=$tip_tax_label_cex, font=1,adj=0)". 
+			" # $node_plot_y,$y1_proportion_start,$y1_proportion,$y2_proportion\n";# REG
+		}else{# adj=0 means left justify, 0.5 would be middle
+		 $R_commandtip = "par(srt=0)\ntext($Xend_offset, $Yend_offset,srt=$pinttextangle , col = \"black\", " .
+			 "labels=\"$print_terminal_label\",cex=$tip_tax_label_cex, font=1,adj=0)" . 
+			" # $node_plot_y,$y1_proportion_start,$y1_proportion,$y2_proportion\n";
 		};
 
 	if($print_tips_circular_tree == 1)
@@ -3416,11 +4677,26 @@ if($branch_plot_type == 2) # nice lines ...
 			$draw_tree_R_commands4 .= $R_command;
 			};
 
-		if($highlight_tips_from_file == 1 && $highlight_tips{$test} =~ /\w/)
-			{
-			my $current_tip_color = $highlight_tips{$test};
 
-			if($highlight_tips_type == 1)
+		if($highlight_tips_from_file == 1 && $highlight_tips{$test} =~ /[\w\d]/)
+			{
+			my $current_tip_color = "red";
+			my $rainbow_X2_current = $rainbow_X2;
+
+			if($highlight_tips{$test} =~ /[A-Za-z]/){ $current_tip_color = $highlight_tips{$test} 
+			}elsif($highlight_tips{$test} =~ /[0-9]/)
+			{
+			my $term_bar_count = $highlight_tips{$test};
+			$rainbow_X2_current = $rainbow_X1 + (($term_bar_count / $max_count_for_terminal)*0.1);
+			};
+
+			# here putting 2 different things into one. prev highlighting tips as bars, new plotting bars relative to some count		
+			#	$bar_counts_file = $1;
+			#	$highlight_tips_from_file = 1;
+			#	$bar_counts = 1; 
+
+
+			if($highlight_tips_type == 1) # $highlight_tips_type = 2; # 1=circle, 2=bar
 			{
 
 			############################################
@@ -3430,8 +4706,9 @@ if($branch_plot_type == 2) # nice lines ...
 			$draw_tree_R_commands4 .= $R_command;
 			############################################
 
-			}else{
- 
+			}else{ # bar
+ 	
+
 			############################################
 			my $R_command;
 			my $XstartBBB;my $YstartBBB;my $XendBBB;my $YendBBB;
@@ -3442,8 +4719,8 @@ if($branch_plot_type == 2) # nice lines ...
 				 $XstartBBB 	= $rainbow_X1 * cos($y2_proportion);# X ax
 				 $YstartBBB 	= $rainbow_X1 * sin($y2_proportion);# Y ax
 				# end position.
-				 $XendBBB 	= $rainbow_X2 * cos($y2_proportion);# X
-				 $YendBBB 	= $rainbow_X2 * sin($y2_proportion);# Y
+				 $XendBBB 	= $rainbow_X2_current * cos($y2_proportion);# X
+				 $YendBBB 	= $rainbow_X2_current * sin($y2_proportion);# Y
 				}else{
 				 $XstartBBB 	= $assign_new_x * cos($y2_proportion); $YstartBBB 	= $assign_new_x * sin($y2_proportion);# Y ax
 				 $XendBBB 	= ($assign_new_x+$colored_tip_bar_length) * cos($y2_proportion); $YendBBB 	= ($assign_new_x+$colored_tip_bar_length) * sin($y2_proportion);# Y
@@ -3465,17 +4742,31 @@ if($branch_plot_type == 2) # nice lines ...
 			{# 2021jan, pie charts at tips to depict trait probabilities
 
 
-			print "ploting pie chart for tip $test\n";
+		#	print "ploting pie chart for tip $test\n";
 			# $known_state{$sp}; $predicted_state{$sp} = "A"; $state_probabilities_for_pie{$sp}{$pr} = $p;
 
 			# only one state, just draw a circle. also with black boarder to signify prior known,
 			if($known_state{$test} =~ /\w/)
 				{
 				my $trait_state = $known_state{$test};my $plotcolor = $trait_state_colors{$trait_state};
-				unless($plotcolor =~ /\w/){die "\nfailed to retrive color for state $trait_state\n"};
+				unless($plotcolor =~ /\w/){die "\nerror 4046. failed to retrive color for state $trait_state\n"};
 
-				my $R_command = "draw.circle($Xend, $Yend,$pie_radius_border,border=NULL,col=\"black\",lty=1, lwd=1); " . 
-					"draw.circle($Xend, $Yend,$pie_radius,border=NULL,col=\"$plotcolor\",lty=1, lwd=1)\n"; # nv=100,
+
+
+				if($known_states_point_type == 1) # 1 = circle, 
+					{
+					my $R_command = "draw.circle($Xend, $Yend,$pie_radius_border,border=NULL,col=\"black\",lty=1, lwd=1); " . 
+						"draw.circle($Xend, $Yend,$pie_radius,border=NULL,col=\"$plotcolor\",lty=1, lwd=1)\n"; # nv=100,
+					$draw_tree_R_commands4 .= $R_command;
+
+					}elsif($known_states_point_type == 2) # 2 == triangle (pch=17)
+					{
+					my $R_command = "points($Xend, $Yend, col = \"black\", pch=17, cex=$triangle_cex1)\n" .
+							"points($Xend, $Yend, col = \"$plotcolor\", pch=17, cex=$triangle_cex2)\n";
+					$draw_tree_R_commands4b .= $R_command;
+					};
+
+
 				$draw_tree_R_commands4 .= $R_command;
 				};
 			
@@ -3492,13 +4783,13 @@ if($branch_plot_type == 2) # nice lines ...
 				my $colorstring = join '","' , @color_array;
 				my $statesstring = join '","' , @all_states_for_pie_array;
 				my $probsstring = join ',' , @prob_array;
-				my $R_command = "draw.circle($Xend, $Yend,$pie_radius_border,border=NULL,col=\"gray\",lty=1, lwd=0.1); " .
+				my $R_command = "draw.circle($Xend, $Yend,$pie_radius_border,border=NULL,col=\"black\",lty=1, lwd=0.1); " . # border
 					"states <- c(\"" . $statesstring . "\");probs <- c("  . $probsstring . ");trait_cols <- c(\"" . $colorstring . "\"); " .
  					"t9 <- matrix (NA, nrow=length(states), ncol = 4);t9[ , 1] <- $Xend;t9[ , 2] <- $Yend;t9[ , 3] <- states;t9[ , 4] <- probs;" . 
  					" xyz <- make.xyz(as.numeric(t9[ , 1]),as.numeric(t9[ , 2]),as.numeric(t9[,4]),t9[,3]);" . 
  					" draw.pie(xyz\$x, xyz\$y, xyz\$z, radius = $pie_radius, col=trait_cols) # $test\n";
 
-				$draw_tree_R_commands4b .= $R_command;
+				$draw_tree_R_commands4c .= $R_command;# predicted tips contain more information, need plotting over tips of known states
 
  # states <- c("A", "B", "C"); probs <- c(0.1, 0.1, 0.8);trait_cols <- c("red","brown","yellow" )
  # t9 <- matrix (NA, nrow=length(states), ncol = 4)
@@ -3509,12 +4800,12 @@ if($branch_plot_type == 2) # nice lines ...
 
 				};
 			
-			};
+			};# if plotting states at tips
 
 
 
 
-		};
+		};# for tips
 
 
 	# $draw_tree_R_commands .= $R_command;
@@ -3549,7 +4840,8 @@ if($label_these_decendent_defined_nodes_found{$current_node} == 1)
 	my $R_command = "points($Xstart, $Ystart, col = \"blue\", pch=16, cex=10)\n" .
 		"par(srt=0)\ntext($Xstart, $Ystart, col = \"black\", " . 
 		"labels=\"$abreviate_nodeID$internal_taxname\",cex=5, font=2)\n";
-	$draw_tree_R_commands3 .= $R_command;
+	$draw_tree_R_commands3 .= $R_command; # draw_tree_R_commands3 = OUT8 = r_commands_filename
+
 	};
 
 
@@ -3557,8 +4849,8 @@ if($count_terminals_node_lable{$current_node} >= $clade_size_limit_for_interal_l
 	$print_internal_labels_circular_tree == 1)
 	{
 	my $R_command = "par(srt=0)\ntext($Xstart, $Ystart, col = \"black\", " . 
-	"labels=\"$abreviate_nodeID$internal_taxname\",cex=$ref_tree_internal_label_cexB, font=2)\n";# REG
-	$draw_tree_R_commands3 .= $R_command;
+	"labels=\"$abreviate_nodeID$internal_taxname\",cex=$ref_tree_internal_label_cexB, font=2)\n";# REG cex=8
+	$draw_tree_R_commands3 .= $R_command;# draw_tree_R_commands3 = OUT8 = r_commands_filename
 	};
 
 if( $internal_names_circular_tree{"$abreviate_nodeID"} =~ /\w/)
@@ -3570,26 +4862,111 @@ if( $internal_names_circular_tree{"$abreviate_nodeID"} =~ /\w/)
 	"labels=\"$nodestring49\",cex=$ref_tree_internal_label_cexB, font=2)\n";# REG
 #	$draw_tree_R_commands3 .= $R_command;
 
+	######################################################################################
 	print_shadow( $Xstart, $Ystart, $nodestring49 ,$rectangular_tree_internal_label_cex);
+	######################################################################################
 		
 	
 	};
 
 
 
+if($internal_support_as_points == 1 && $internal_node_support =~ /\d/)
+	{
+	my $R_command = "colors1 <- rgb(colorfunc($internal_node_support) , maxColorValue=255)\n" . 
+		 "points($Xstart, $Ystart,col=colors1, pch=16, cex = $internal_support_point_size)\n";
+	$draw_tree_R_commands4 .= $R_command;
+		
+	}else{
+#	print "\nERROR 3655 internal_support_as_points:$internal_support_as_points internal_node_support:$internal_node_support\n";
+	};
 
 
 
 
-if($print_internal_node_labels_on_rectangular_tree == 1)
+
+
+
+if($print_internal_node_labels_on_tree == 1) # print inferred node labels
 	{
 
+	######################################################################################
+	# note this applies to rectangular and circular
+	# edit, $sum_branchlength, $y1_proportion prob no good for circluar, would need $Xend, $Yend
 	print_shadow( $sum_branchlength, $y1_proportion, "$abreviate_nodeID$internal_taxname" ,$rectangular_tree_internal_label_cex);
+	######################################################################################
 
 	my $R_command = "par(srt=0)\ntext($sum_branchlength, $y1_proportion, col = \"black\", " . 
 	"labels=\"$abreviate_nodeID$internal_taxname\",cex=$rectangular_tree_internal_label_cex, font=2)\n";# REG
 	$draw_tree_R_commands_RECTANGL_internal_node_labels .= $R_command;	
+
+	}elsif($print_internal_node_labels_on_tree == 2) # print native node labels
+	{
+
+	if($metacoder_node_points =~ /[12]/)
+		{
+		if($printing_metacoder_style_node ==1)
+			{
+			$internal_node_support =~ s/\w+\.//;
+			 my $internal_node_supportCOPY = $internal_node_support;  $internal_node_supportCOPY =~ s/\w/ /g;
+			# add a load of spaces to lhs, to move label to right of pie chart
+
+			my $decendent_count = $count_terminals_node_lable{$test};
+			my $print_internal_nodelabel =  " -$decendent_count-" . $internal_node_support; # #  
+
+			# my $print_internal_nodelabel =  "    -" . $internal_node_support; # #  
+			# plot internal lables, writes commands to $draw_tree_R_commands6
+			print_shadow( $Xend, $Yend, "$print_internal_nodelabel" ,$rectangular_tree_internal_label_cex);
+			}
+		
+		}else{
+		
+	######################################################################################
+	# note this applies to rectangular and circular
+	print_shadow( $Xend, $Yend, "$internal_node_support" ,$rectangular_tree_internal_label_cex);
+	######################################################################################
+
+		}
+	
+
+
+	}elsif($print_internal_node_labels_on_tree == 3) # detach node labels from branch width scaling 
+	{
+
+	my $print_current_nodelabel =0;
+#	$internal_label_decendent_plot_limit = 500;
+
+	if($count_terminals_node_lable{$test} =~ /\d/ && $count_terminals_node_lable{$test} >= $internal_label_decendent_plot_limit)
+		{
+
+		if($plot_coverage_only_for_none == 1)
+			{
+			if($PA_color eq "gray"){$print_current_nodelabel = 1}else{$print_current_nodelabel = 0}
+			}else{
+
+			if($internal_node_support =~ /^$internal_label_plot_string/){$print_current_nodelabel = 1};
+
+			}
+
+		}else{
+	#	$print_current_nodelabel = 0;
+		
+		};
+
+
+	if($print_current_nodelabel == 1)
+		{
+		my $decendent_count = $count_terminals_node_lable{$test};
+		$internal_node_support =~ s/\w+\.//;
+#		 my $internal_node_supportCOPY = $internal_node_support;  $internal_node_supportCOPY =~ s/\w/ /g;
+#		# add a load of spaces to lhs, to move label to right of pie chart
+		my $print_internal_nodelabel =  " -$decendent_count-" . $internal_node_support; # #  
+		# plot internal lables, writes commands to $draw_tree_R_commands6
+		print_shadow( $Xend, $Yend, "$print_internal_nodelabel" ,$rectangular_tree_internal_label_cex);
+		};
+
 	};
+
 
 
 
@@ -3755,59 +5132,63 @@ return($add_tax_string);
 
 sub print_shadow
 {
-my $XstartC = $_[0]; my $YstartC = $_[1]; 
-my $printlable = $_[2]; my $rectangular_tree_internal_label_cex = $_[3];
+my $XstartC = $_[0]; my $YstartC = $_[1]; my $printlable = $_[2]; my $rectangular_tree_internal_label_cex = $_[3];
+
+my $shadow_text_srt = $_[4]; # this one optional
+my $pinttextangle = 0;
+if($shadow_text_srt =~ /\d/){$pinttextangle = $shadow_text_srt};
+
+# $R_command4 = "text($XstartMID, $YstartMID, col = \"black\", " . "labels=\"$graft_tax_label\",cex=$graft_tax_label_cex,srt=$pinttextangle , font=1)\n";# REG
 
 my $text_shadow_col = "white"; # azure4
-my $pinttextangle = 0;
 my $ref_tree_internal_label_cex = $rectangular_tree_internal_label_cex;
-my $text_shadow_offset = 0.005;
+	# font refers to font face; 1=plain, 2=bold, 3=italic, 4=bold-italic
 
 			# lower left
 			my $R_command = "par(srt=0)\ntext($XstartC-$text_shadow_offset, $YstartC-$text_shadow_offset,srt=$pinttextangle , col = \"$text_shadow_col\", " . 
-				"labels=\"$printlable\",cex=$ref_tree_internal_label_cex, font=2)\n";# REG
-			$draw_tree_R_commands_RECTANGL_internal_node_labels .= $R_command;$draw_tree_R_commands3 .= $R_command;
+				"labels=\"$printlable\",cex=$ref_tree_internal_label_cex, font=2, adj=$internal_label_justify)\n";# REG
+			$draw_tree_R_commands_RECTANGL_internal_node_labels .= $R_command;$draw_tree_R_commands6 .= $R_command; # draw_tree_R_commands3 = OUT8 = r_commands_filename
 
 			# lower mid
 			my $R_command = "par(srt=0)\ntext($XstartC, $YstartC-$text_shadow_offset,srt=$pinttextangle , col = \"$text_shadow_col\", " . 
-				"labels=\"$printlable\",cex=$ref_tree_internal_label_cex, font=2)\n";# REG
-			$draw_tree_R_commands_RECTANGL_internal_node_labels .= $R_command;$draw_tree_R_commands3 .= $R_command;
+				"labels=\"$printlable\",cex=$ref_tree_internal_label_cex, font=2, adj=$internal_label_justify)\n";# REG
+			$draw_tree_R_commands_RECTANGL_internal_node_labels .= $R_command;$draw_tree_R_commands6 .= $R_command;
 
 			# lower right
 			my $R_command = "par(srt=0)\ntext($XstartC+$text_shadow_offset, $YstartC-$text_shadow_offset,srt=$pinttextangle , col = \"$text_shadow_col\", " . 
-				"labels=\"$printlable\",cex=$ref_tree_internal_label_cex, font=2)\n";# REG
-			$draw_tree_R_commands_RECTANGL_internal_node_labels .= $R_command;$draw_tree_R_commands3 .= $R_command;
+				"labels=\"$printlable\",cex=$ref_tree_internal_label_cex, font=2, adj=$internal_label_justify)\n";# REG
+			$draw_tree_R_commands_RECTANGL_internal_node_labels .= $R_command;$draw_tree_R_commands6 .= $R_command;
 
 			# upper left
 			my $R_command = "par(srt=0)\ntext($XstartC-$text_shadow_offset, $YstartC+$text_shadow_offset,srt=$pinttextangle , col = \"$text_shadow_col\", " . 
-				"labels=\"$printlable\",cex=$ref_tree_internal_label_cex, font=2)\n";# REG
-			$draw_tree_R_commands_RECTANGL_internal_node_labels .= $R_command;$draw_tree_R_commands3 .= $R_command;
+				"labels=\"$printlable\",cex=$ref_tree_internal_label_cex, font=2, adj=$internal_label_justify)\n";# REG
+			$draw_tree_R_commands_RECTANGL_internal_node_labels .= $R_command;$draw_tree_R_commands6 .= $R_command;
 
 			# upper mid
 			my $R_command = "par(srt=0)\ntext($XstartC, $YstartC+$text_shadow_offset,srt=$pinttextangle , col = \"$text_shadow_col\", " . 
-				"labels=\"$printlable\",cex=$ref_tree_internal_label_cex, font=2)\n";# REG
-			$draw_tree_R_commands_RECTANGL_internal_node_labels .= $R_command;$draw_tree_R_commands3 .= $R_command;
+				"labels=\"$printlable\",cex=$ref_tree_internal_label_cex, font=2, adj=$internal_label_justify)\n";# REG
+			$draw_tree_R_commands_RECTANGL_internal_node_labels .= $R_command;$draw_tree_R_commands6 .= $R_command;
 
 			# upper right
 			my $R_command = "par(srt=0)\ntext($XstartC+$text_shadow_offset, $YstartC+$text_shadow_offset,srt=$pinttextangle , col = \"$text_shadow_col\", " . 
-				"labels=\"$printlable\",cex=$ref_tree_internal_label_cex, font=2)\n";# REG
-			$draw_tree_R_commands_RECTANGL_internal_node_labels .= $R_command;$draw_tree_R_commands3 .= $R_command;
+				"labels=\"$printlable\",cex=$ref_tree_internal_label_cex, font=2, adj=$internal_label_justify)\n";# REG
+			$draw_tree_R_commands_RECTANGL_internal_node_labels .= $R_command;$draw_tree_R_commands6 .= $R_command;
 
 
 			# mid left
 			my $R_command = "par(srt=0)\ntext($XstartC-$text_shadow_offset, $YstartC+($text_shadow_offset*0.5),srt=$pinttextangle , col = \"$text_shadow_col\", " . 
-				"labels=\"$printlable\",cex=$ref_tree_internal_label_cex, font=2)\n";# REG
-			$draw_tree_R_commands_RECTANGL_internal_node_labels .= $R_command;$draw_tree_R_commands3 .= $R_command;
+				"labels=\"$printlable\",cex=$ref_tree_internal_label_cex, font=2, adj=$internal_label_justify)\n";# REG
+			$draw_tree_R_commands_RECTANGL_internal_node_labels .= $R_command;$draw_tree_R_commands6 .= $R_command;
 
 			# mid right
 			my $R_command = "par(srt=0)\ntext($XstartC+$text_shadow_offset, $YstartC+($text_shadow_offset*0.5),srt=$pinttextangle , col = \"$text_shadow_col\", " . 
-				"labels=\"$printlable\",cex=$ref_tree_internal_label_cex, font=2)\n";# REG
-			$draw_tree_R_commands_RECTANGL_internal_node_labels .= $R_command;$draw_tree_R_commands3 .= $R_command;
+				"labels=\"$printlable\",cex=$ref_tree_internal_label_cex, font=2, adj=$internal_label_justify)\n";# REG
+			$draw_tree_R_commands_RECTANGL_internal_node_labels .= $R_command;$draw_tree_R_commands6 .= $R_command;
 
 			# main
 			my $R_command = "par(srt=0)\ntext($XstartC, $YstartC,srt=$pinttextangle , col = \"black\", " . 
-				"labels=\"$printlable\",cex=$ref_tree_internal_label_cex, font=2)\n";# REG
-			$draw_tree_R_commands_RECTANGL_internal_node_labels .= $R_command;$draw_tree_R_commands3 .= $R_command;
+				"labels=\"$printlable\",cex=$ref_tree_internal_label_cex, font=2, adj=$internal_label_justify)\n";# REG
+			$draw_tree_R_commands_RECTANGL_internal_node_labels .= $R_command;$draw_tree_R_commands6 .= $R_command;
 
 
 
@@ -4324,7 +5705,7 @@ newick string stored,
 
 
 
-unless($interal_node >= 2){die "\nerror reading your phylogeny.\n"}
+unless($interal_node >= 2){die "\nerror 4932. appears phylogeny (file $treefile) not read correctly (\$interal_node == $interal_node).\n"}
 
 $new_newick_string99 = "($root_node)";
 
@@ -4634,10 +6015,10 @@ print "\tnewick string of length $tree_length has been read from file:$intree\n\
 
 $scientific_notation_branchlengths_replaced = 0;
 #while ($tree1 =~ s/\:(\d\.\d+)[eE](\-\d+)/"\:" .  ($1 * ( 10 ** $2 ))/e)
-while ($tree1 =~ /\:(\d\.\d+[eE]\-\d+)/)
+while ($tree1 =~ /\:(\d\.\d+[eE][\-\+]\d+)/)
 	{
 	my $valueA = $1; my $recalculated = sprintf("%.5f", $valueA);
-	$tree1 =~ s/\:\d\.\d+[eE]\-\d+/:$recalculated/;
+	$tree1 =~ s/\:\d\.\d+[eE][\-\+]\d+/:$recalculated/;
 #	my $valueA = $1; my $valueB = $2; my $recalculated = $valueA * ( 10 ** $valueB );
 
 
@@ -4649,6 +6030,27 @@ while ($tree1 =~ /\:(\d\.\d+[eE]\-\d+)/)
 
 		};
 	};	
+
+while ($tree1 =~ /\:([1-9][eE]\-\d+)/)
+	{
+	my $valueA = $1; my $recalculated = sprintf("%.5f", $valueA);
+	$tree1 =~ s/\:[1-9][eE]\-\d+/:$recalculated/;
+#	my $valueA = $1; my $valueB = $2; my $recalculated = $valueA * ( 10 ** $valueB );
+
+
+	$scientific_notation_branchlengths_replaced++;
+	if($scientific_notation_branchlengths_replaced =~ /000$/)
+		{
+		print "scientific_notation_branchlengths_replaced:$scientific_notation_branchlengths_replaced\n";
+		print "\twas:$valueA, changed to $recalculated\n";
+
+		};
+	};	
+
+
+
+
+
 
 print "
 scientific_notation_branchlengths_replaced:$scientific_notation_branchlengths_replaced
@@ -4700,7 +6102,7 @@ my %check_duplication = ();
 for my $all_connections(0 .. $count_connections)
 	{
 	my $connecting_node = $nodes{$current_node}{$all_connections};
-	if(exists($check_duplication{$connecting_node})){die "\nduplcaution error:$connecting_node\n"};
+	if(exists($check_duplication{$connecting_node})){die "\nduplication error 4:$connecting_node\n"};
 	$check_duplication{$connecting_node} = 1;
 
 	unless($connecting_node =~ /[\w\d]/)
@@ -5015,7 +6417,7 @@ my %check_duplication = ();
 for my $all_connections(0 .. $count_connections)
 	{
 	my $connecting_node = $nodes11{$current_node}{$all_connections};
-	if(exists($check_duplication{$connecting_node})){die "\nduplcaution error:$connecting_node\n"};
+	if(exists($check_duplication{$connecting_node})){die "\nduplication error 5:$connecting_node\n"};
 	$check_duplication{$connecting_node} = 1;
 
 	if($from_parent eq "New_Root")
@@ -5033,6 +6435,7 @@ if($current_node =~ /INTERNAL_NODE/)
 	{
 	$terminals_belonging_to_current_node_second_tree = "";
 	$terminals_belonging_to_current_node_which_have_tax_info = "";
+#	$list_taxonomic_species_also_in_sourcetree = "";
 
 	###############################################################
 	get_terminals_from_this_node_second_tree($current_node , $from_parent , 0);#
@@ -5042,6 +6445,13 @@ if($current_node =~ /INTERNAL_NODE/)
 	$terminals_belonging_to_current_node_second_tree =~ s/^\t+//;$terminals_belonging_to_current_node_second_tree =~ s/\t+$//;
 	my @count_terms_array = split /\t/ , $terminals_belonging_to_current_node_second_tree;
 	my $count_termnials = scalar @count_terms_array;
+
+# seems i put this in the wrong place:
+#	# also, these are species that are also found in sourcetrees (phylogenetic coverage)
+#	$list_taxonomic_species_also_in_sourcetree =~ s/(\t)\t+/$1/;
+#	$list_taxonomic_species_also_in_sourcetree =~ s/^\t+//;$list_taxonomic_species_also_in_sourcetree =~ s/\t+$//;
+#	my @count_coverage_array = split /\t/ , $list_taxonomic_species_also_in_sourcetree;
+#	my $count_coverage = scalar @count_coverage_array;
 
 
 	my @sorted_terminals_array = sort @count_terms_array;
@@ -5116,6 +6526,8 @@ for my $index(0 .. $#next1)
 		}elsif($test =~ /[\w\d]/)
 		{
 		$terminals_belonging_to_current_node_second_tree .= "$test\t";
+	#	# 20230905: here also store species of the taxonomic heirachy that are also present in sourcetrees.
+	#	if($all_sourcetree_binomials{$test} == 1){$list_taxonomic_species_also_in_sourcetree .= "$test\t"};
 		};
 	}
 return();
@@ -5243,13 +6655,15 @@ for my $j(1 .. $num_labs_to_print)
 		};
 
 
-	if($append_terminal_label_with_fam_name == 1)
-		{
-	$b7 .= $append_tip_string;
-		};
+	if($append_terminal_label_with_fam_name == 1){$b7 .= $append_tip_string};
+	if($truncate_summary_tax_label == 1){$b7 =~ s/^(\w{10}).+/$1./};
 
 	my $current_mid = $current_position + ($bin_size*0.5);	
 	my $y1_proportion = ($current_mid / $count_terminals) + 1; $y1_proportion *= $multipleier;
+	$y1_proportion -= $clock_adjust;
+
+
+
 	my $Xstart 	= $reference_tip_label_x * cos($y1_proportion);# X ax
 	my $Ystart 	= $reference_tip_label_x * sin($y1_proportion);# Y ax
 	 # wasted 3 hours of my life finding out how to write this one line:
@@ -5261,7 +6675,7 @@ for my $j(1 .. $num_labs_to_print)
 	
 	my $R_command;
 	 $R_command = "par(srt=0)\ntext($Xstart, $Ystart,srt=$pinttextangle , col = \"$print_col\", " . 
-			"labels=\"$b7\",cex=$tip_tax_label_cex, font=1)\n";# REG
+			"labels=\"$b7\",cex=$summary_tax_label_cex, font=1,adj=$summary_tax_label_adj)\n"; 
 
 #	 $R_command = "par(srt=0)\ntext($Xstart, $Ystart,srt=$pinttextangle , col = \"$print_col\", " . 
 #			"labels=\"$b7\",cex=$tip_tax_label_cex, font=1)\n";# REG
@@ -5288,6 +6702,107 @@ for my $j(1 .. $num_labs_to_print)
 
 
 }; # sub print_terminal_tax_labels
+
+
+
+
+#######################################################################################################################################
+#
+#
+#
+#
+#
+#######################################################################################################################################
+
+
+sub internal_scales
+{
+
+
+
+my @y_positions = keys %store_terminals_at_each_y_position;
+@y_positions = sort { $a <=> $b } @y_positions;
+my $len_y  = scalar @y_positions;
+my $lowest = $y_positions[0];my $highest = $y_positions[$#y_positions];
+my $range = $highest-$lowest;
+my $bin_size = $range/$steps_internal_scales;
+print "
+sub INTERNAL SCALES
+";
+
+
+for my $scale_index(0 .. $#internal_scales_inner)
+	{
+	my $current_position = $lowest;
+	my $current_X1 = $internal_scales_inner[$scale_index]; my $current_X2 = $internal_scales_outer[$scale_index]; 
+
+	my @current_polygon = ();
+	my $current_polygon_X_forward;my $current_polygon_X_backward;
+	my $current_polygon_Y_forward;my $current_polygon_Y_backward;
+	my @current_polygon_X_forward_array;my @current_polygon_Y_forward_array;
+
+	for my $j(1 .. $steps_internal_scales)
+		{
+		my $current_end = $current_position + $bin_size;	#	print "lable no:$j $current_position to $current_end\n";
+		my $print_col = "black"; # 	if(exists($which_color_is_genus{$b7})){$print_col = $which_color_is_genus{$b7}}else{};
+		my $current_mid = $current_position + ($bin_size*0.5);	
+		my $y1_proportion = ($current_mid / $count_terminals) + 1; $y1_proportion *= $multipleier;$y1_proportion -= $clock_adjust;
+	
+		my $R_command;
+		# start position.
+		my $XstartB 	= $current_X1 * cos($y1_proportion);# X ax
+		my $YstartB 	= $current_X1 * sin($y1_proportion);# Y ax
+		# end position.
+		my $XendB 	= $current_X2 * cos($y1_proportion);# X
+		my $YendB 	= $current_X2 * sin($y1_proportion);# Y
+		# $current_polygon_X_forward .= "\t$XstartB\t";$current_polygon_Y_forward .= "\t$YstartB\t";
+		$current_polygon_X_backward .= "\t$XendB\t";
+		$current_polygon_Y_backward .= "\t$YendB\t";
+
+		push @current_polygon_X_forward_array, $XstartB;
+		push @current_polygon_Y_forward_array, $YstartB;
+
+	#	my $R_command =  "segments(" . "$XstartB, $YstartB,$XendB , $YendB , " . "col = \"$bar_color\", lwd = $rainbow_line_width)\n";
+	#	$draw_tree_R_commands_tip_labels  .= $R_command;
+
+		$current_position += $bin_size;
+		}
+
+
+	$current_polygon_X_backward =~ s/^\t+//;$current_polygon_X_backward =~ s/\t+$//;$current_polygon_Y_backward =~ s/^\t+//;$current_polygon_Y_backward =~ s/\t+$//;
+	my @current_polygon_X_backward_array = split /\t+/, $current_polygon_X_backward;
+	my @current_polygon_Y_backward_array = split /\t+/, $current_polygon_Y_backward;
+
+	@current_polygon_X_backward_array = reverse(@current_polygon_X_backward_array);
+	@current_polygon_Y_backward_array = reverse(@current_polygon_Y_backward_array);
+
+	$current_polygon_X_backward = join(',' , @current_polygon_X_backward_array);
+	$current_polygon_Y_backward = join(',' , @current_polygon_Y_backward_array);
+
+	my $current_polygon_X_forward = join(',' , @current_polygon_X_forward_array);
+	my $current_polygon_Y_forward = join(',' , @current_polygon_Y_forward_array);
+
+	my $current_polygon_Xs = "$current_polygon_X_forward,$current_polygon_X_backward";
+	my $current_polygon_Ys = "$current_polygon_Y_forward,$current_polygon_Y_backward";
+
+#	print "
+#	current_polygon_X_forward:$current_polygon_X_forward
+#	current_polygon_X_backward:$current_polygon_X_backward
+#	current_polygon_Y_forward:$current_polygon_Y_forward
+#	current_polygon_Y_backward:$current_polygon_Y_backward
+#		";
+
+	my $current_color = $internal_scales_color[$scale_index];
+
+		my $R_command =  "col_scaled <- rgb(colorfunc2($current_color) , maxColorValue=255); polygon( c($current_polygon_Xs), c($current_polygon_Ys) , " . "col = col_scaled , border = NA)\n";
+		$draw_tree_R_commands_internal_scales  .= $R_command;
+
+
+	};# for my $scale_index(0 .. $#internal_scales_inner)
+
+
+
+};
 
 
 
@@ -5343,13 +6858,13 @@ sub print_rainbow
 
 	);
 
- %gene_synonyms = (
-	'Geometridae' 			=> 'red',
-	'Crambidae' 		=> 'green',
-	'Noctuoidea' 		=> 'blue',
-	'Sphingidae'	=> 'aquamarine3',
-	'Limacodidae' 		=> 'pink4'
-	);
+# %gene_synonyms = (
+#	'Geometridae' 			=> 'red',
+#	'Crambidae' 		=> 'green',
+#	'Noctuoidea' 		=> 'blue',
+#	'Sphingidae'	=> 'aquamarine3',
+#	'Limacodidae' 		=> 'pink4'
+#	);
   
 
 
@@ -5428,7 +6943,7 @@ $count_each_taxon{$tentative_genus}++;
 	my $famname = $b7; my $order_name; my $append_tip_string = "";
 	$bar_color = "grey";
 
-	print "b7:$b7 test_taxonomy:$test_taxonomy\n";
+#	print "b7:$b7 test_taxonomy:$test_taxonomy\n";
 
 	# try get from formal taxonomic lineage, 
 	if($test_taxonomy =~ / order\:(\w+)\s|suborder\:(\w+)\s/)
@@ -5462,7 +6977,7 @@ $count_each_taxon{$tentative_genus}++;
 
 
 	my $current_mid = $current_position + ($bin_size*0.5);	
-	my $y1_proportion = ($current_mid / $count_terminals) + 1; $y1_proportion *= $multipleier;
+	my $y1_proportion = ($current_mid / $count_terminals) + 1; $y1_proportion *= $multipleier;$y1_proportion -= $clock_adjust;
 #	my $Xstart 	= $reference_tip_label_x * cos($y1_proportion);# X ax
 #	my $Ystart 	= $reference_tip_label_x * sin($y1_proportion);# Y ax
 
@@ -5582,7 +7097,15 @@ foreach my $binomial(@terminal_array)
 
 		}else{ # 	if($completelineage =~ /\w/)
 		$newick_binomials_for_which_taxonomies_not_found++;	
-		print "no lineage found for binomial:$binomial or genus:$genus\n";
+
+
+		$print_warnings33++;
+		if($print_warnings33 <= 100)
+			{
+			print "no lineage found for binomial:$binomial or genus:$genus\n";
+			};
+
+
 		};
 
 

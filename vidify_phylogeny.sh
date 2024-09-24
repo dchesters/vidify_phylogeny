@@ -1,117 +1,73 @@
 
-#	
-# 'vidify_phylogeny', Linux tools for depicting a phylogeny as audio and video.
-#		  
-# Copyright (C) 2021  Douglas Chesters
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-# contact address dc0357548934@live.co.uk
-#
-#
-#############################################################################################################
-#
-#
+# 
+# Get latest version from github.com/dchesters/vidify_phylogeny
+# 
+# Assuming Unix-like environment.
 # Dependencies:
-#	ffmpeg
-#	audacity
-# 	process_newick.pl
-# 	plot_frames.R
-#	audify_phylogeny.R
-# 	sort_commands_for_plotting_frame.pl
-# 	R packages plotrix, scales, tuneR
+#   R
+#   R libraries plotrix, scales, tuneR
+#   Perl scripts process_newick.pl, sort_commands_for_plotting_frame.pl
+#   R scripts audify_phylogeny.R, plot_frames.R
+#   ffmpeg
+#   Audacity
+#   a text controlfile named controlfile.txt
+#   a text subtitles file named subtitles.srt
+# Tree viewers recommended for processing (e.g. format conversion, rooting, outgroup removal),
+# I suggest you have installed both Figtree (tree.bio.ed.ac.uk/software/figtree/) and 
+# Archaeopteryx (phylosoft.org/archaeopteryx/).
 #
-#
-#############################################################################################################
+# Input is Newich format machine reable phylogeny (Nexus format will need converting to Newick first).
+# Tree must contain branch lengths. Node labels best removed (certainly complex format ones).
+# Can be either ultrametric or phylogram.
+# Tree should be rooted, clade-ordered, best to remove outgroup if practical (if clearly labelled as such).
+# There should be no duplicate terminal IDs (which will crash many applications).
+# Thus, your Newick string should look something like this:
+# (Apis_florea:0.5,((Apis_cerana:0.1,Apis_mellifera:0.1):0.2,(Apis_dorsata:0.2,Apis_laboriosa:0.2):0.1):0.2);
 
+# Read phylogeny, interpret each branch as vector (X and Y positions for start and end), then tabulate.
+intree=your_tree.nwk
+control=controlfile.txt
+rm vidify_table2
+perl process_newick.pl -controlfile $control -intree $intree -outprefix $intree -audify
+# Output file of branch vectors is vidify_table2 (other files produced can be ignored).
 
-  # Read phylogeny, interpret each node as X and Y position, then tabulate.
-
-# Tested on process_newick.pl v2.26
-# Following settings should be used in script:
-#   $highlight_tips_from_file = 0;
-#   $reduce_very_long_branches_to_this = 1000.3;
-#   $print_internal_node_labels_on_rectangular_tree = 1;
-intree=filename.nwk
-rm vidify_table
-perl process_newick.pl -intree $intree -outprefix $intree -ncbi_tax_node 6960 -plot_tree -plot_trees_with_branchlengths
-
-
-#############################################################################################################
-
-
-  # Read table of nodes and plot sequential frames in root to tip direction.
-
-# Following command requires Perl script (sort_commands_for_plotting_frame.pl) in working directory.
-# Needs to have installed R libraries: plotrix, scales, tuneR
-# Input: vidify_table
-# It will remove if present, all previous video frames (video_frame.*)
-R < plot_frames.R --vanilla --slave
-
-# Output are loads of video frames, each jpeg image. check these are present with following command. 
-# Under default settings should be about 1621 frames (for 70 second video)
-ls video_frame.*.jpeg | wc -l
-
-
-#############################################################################################################
-
-
-  # make video from frames
-
-# Uses default framerate of 25 (use -framerate switch to change)
-ffmpeg -i video_frame.%d.jpeg Ephemeroptera_Video.mpeg
-
-
-#############################################################################################################
-
-
-  # Convert each bifurcation of phylogeny, to a tone (silence up to x position followed by diminishing tone), 
-  #  and save to indivdual files.
-
-# Two R libraries should be installed: scales, tuneR
-# There is 1 input file, named: 'vidify_table'
-# script will delete tracks from previous run, if present (audio_track*)
+# Branch vectors converted to waveforms.
+# Process will take anywhere between one minute and several hours depending on tree size.
+# The script will automatically change some variables according to number of branches input,
+# such as track length (currently one of either 30, 60, 120 seconds) and amplitude decay.
 R < audify_phylogeny.R --vanilla --slave
+# Output is a set of Wav files, corresponding one for each branch.
 
-# How many tones (each in seperate file), this number depends on number of nodes in phylogeny:
-ls audio_track_A.* | wc -l
-
-
-#############################################################################################################
-
-
-  # Combine tones (currently each in seperate file) to single track.
-
-# Manual steps required here. 
-#  (A couple of command line options i tried gave terrible results. Thus opted for Audacity)
-#  Open AUDACITY and do the following:
-#	Import audio tracks (no more than abuot 700 at a time), 
-#		for each set imported: Select all, Tracks/mix/mix and render.
+# Manual steps required here for combining Wav files. 
+# Open Audacity and do the following:
+#	Import audio tracks (no more than about 1000 at a time), 
+#	Can take some minutes and there is no progress bar, but scroll bar appears on RHS when done.
+#	For each set imported: Select all, Tracks, mix, mix and render.
 #	When all imported: 
-#	Select track, effect, normalize, normalize peak amplitude to -10 db, click OK.
 #	Effect, base and treble, manually increase bass, click apply, close.
-# 	File, Export, export as WAV (filename audio.wav).
+#	Select track, effect, normalize, normalize peak amplitude to -4 db, click OK.
+# 	File, Export, export as Wav, filename Audio.wav
 
+# Optional, make a video corresponding to the audio track. Input file again vidify_table2.
+# Needs to have installed R libraries: plotrix, scales, tuneR
+# Image dimensions have been precisely set, close to widescreen ratio 16/9,
+# though slightly off to ensure divisible dimensions (a requirement for adding subtitles).
+# It will remove if present, all previous video frames (video_frame.*)
+# Following command requires Perl script (sort_commands_for_plotting_frame.pl) in working directory.
+R < plot_frames.R --vanilla --slave
+# Output is a load of JPEGs, numbering 25(fps) * track length
 
-#############################################################################################################
+# Combine JPEG frames to video.
+ffmpeg -i video_frame.%d.jpeg Video.mpeg
 
+# Combine audio and video.
+ffmpeg -i Video.mpeg -i Audio.wav -c:v copy -c:a aac AudioVideo.mp4
 
-  # Combine audio and video using linux command line tool.
-
-ffmpeg -i Ephemeroptera_Video.mpeg -i audio.wav -c:v copy -c:a aac AudioVideo.mp4
-
-
-#############################################################################################################
-
+# Add subtitle, I recommend having this additional identifier on the video itself to avoid mixups.
+# Standard format for subtitles used, e.g. this will add a single line to start of video:
+# 1
+# 00:00:02,000 --> 00:00:07,000
+# Chesters et al 2023, Diptera
+# Default font size doesnt look great, so is reduced.
+ffmpeg -i AudioVideo.mp4 -vf subtitles=subtitles.srt:force_style='Fontsize=8' AudioVideo.srt.mp4
 
