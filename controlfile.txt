@@ -1,0 +1,17 @@
+scale_branchlengths = 0
+plot_X_left = 0.0
+plot_X_right = 1.0
+plot_Y_lower = 0.0
+plot_Y_upper = 1.0
+remove_node_support_from_input_tree = 0
+plot_root_node_branchlength = 0.00025
+attach_higher_taxname_to_tip_label = 0
+highlight_tips_from_file = 0
+width = 0.15
+print_internal_node_labels_on_tree = 0
+collapse_terminus_adjacent = 0
+metacoder_node_points = 0
+read_sourcetrees = 0
+sourcetrees_path = 
+sourcetrees_list = NULL
+
